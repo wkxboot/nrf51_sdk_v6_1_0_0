@@ -26,10 +26,10 @@
 #define BUTTON_PULL    NRF_GPIO_PIN_PULLUP
 
 #define RX_PIN_NUMBER  11
-#define TX_PIN_NUMBER  9
+#define TX_PIN_NUMBER  30
 #define CTS_PIN_NUMBER 10
 #define RTS_PIN_NUMBER 8
-#define HWFC           true
+#define HWFC           false
 
 #define SPIS_MISO_PIN  20    // SPI MISO signal. 
 #define SPIS_CSN_PIN   21    // SPI CSN signal. 

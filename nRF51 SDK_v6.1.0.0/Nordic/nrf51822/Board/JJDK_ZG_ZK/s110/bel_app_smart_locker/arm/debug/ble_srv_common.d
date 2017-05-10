@@ -1,0 +1,15 @@
+.\debug\ble_srv_common.o: ..\..\..\..\..\Source\ble\ble_services\ble_srv_common.c
+.\debug\ble_srv_common.o: ..\..\..\..\..\Include\ble\ble_services\ble_srv_common.h
+.\debug\ble_srv_common.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\debug\ble_srv_common.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\debug\ble_srv_common.o: ..\..\..\..\..\Include\s110\ble_types.h
+.\debug\ble_srv_common.o: ..\..\..\..\..\Include\app_common\app_util.h
+.\debug\ble_srv_common.o: ..\..\..\..\..\Include\compiler_abstraction.h
+.\debug\ble_srv_common.o: ..\..\..\..\..\Include\s110\ble_gap.h
+.\debug\ble_srv_common.o: ..\..\..\..\..\Include\s110\ble_ranges.h
+.\debug\ble_srv_common.o: ..\..\..\..\..\Include\s110\nrf_svc.h
+.\debug\ble_srv_common.o: ..\..\..\..\..\Include\s110\ble_gatt.h
+.\debug\ble_srv_common.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\debug\ble_srv_common.o: ..\..\..\..\..\Include\nordic_common.h
+.\debug\ble_srv_common.o: ..\..\..\..\..\Include\app_common\app_error.h
+.\debug\ble_srv_common.o: ..\..\..\..\..\Include\s110\nrf_error.h

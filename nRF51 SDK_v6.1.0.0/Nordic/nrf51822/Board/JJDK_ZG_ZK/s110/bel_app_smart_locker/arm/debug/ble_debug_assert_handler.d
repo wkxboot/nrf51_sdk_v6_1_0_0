@@ -1,0 +1,13 @@
+.\debug\ble_debug_assert_handler.o: ..\..\..\..\..\Source\ble\ble_debug_assert_handler.c
+.\debug\ble_debug_assert_handler.o: ..\..\..\..\..\Include\ble\ble_debug_assert_handler.h
+.\debug\ble_debug_assert_handler.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\debug\ble_debug_assert_handler.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\debug\ble_debug_assert_handler.o: ..\..\..\..\..\Include\nrf51.h
+.\debug\ble_debug_assert_handler.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Include\core_cm0.h
+.\debug\ble_debug_assert_handler.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Include\core_cmInstr.h
+.\debug\ble_debug_assert_handler.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Include\core_cmFunc.h
+.\debug\ble_debug_assert_handler.o: ..\..\..\..\..\Include\system_nrf51.h
+.\debug\ble_debug_assert_handler.o: ..\..\..\..\..\Include\ble\ble_error_log.h
+.\debug\ble_debug_assert_handler.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\debug\ble_debug_assert_handler.o: ..\..\..\..\..\Include\ble\ble_flash.h
+.\debug\ble_debug_assert_handler.o: ..\..\..\..\..\Include\nordic_common.h

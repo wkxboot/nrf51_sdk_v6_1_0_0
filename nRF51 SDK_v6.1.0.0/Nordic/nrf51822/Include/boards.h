@@ -20,6 +20,8 @@
   #include "boards/pca10001.h"
 #elif defined(BOARD_PCA10003)
   #include "boards/pca10003.h"
+#elif defined(BOARD_JJDK_ZG_ZK)
+  #include "boards/jjdk_zg_zk.h"
 #else
 #error "Board is not defined"
 #endif
