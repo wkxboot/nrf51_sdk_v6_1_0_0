@@ -15026,14 +15026,31 @@ void bsp_board_buttons_init(void)
 
 static void bsp_sls_env_value_init(void)
 {
+
 	 uv_lamp_cmd          = 2;
    fan_negative_ion_cmd = 2;
    elec_lock_cmd        = 2;
 
-   uv_lamp_status          = 2;
-   uv_lamp_door_status     = 2;
-   fan_negative_ion_status = 2;
-   elec_lock_status        = 2;
+	if(bsp_board_button_state_get(3))
+  uv_lamp_door_status     = 1;
+	else
+  uv_lamp_door_status     = 2;
+	
+	if(bsp_board_button_state_get(2))
+	elec_lock_status     = 1;
+	else
+  elec_lock_status     = 2;;
+	
+  uv_lamp_status          = 2;   
+  fan_negative_ion_status = 2;
+	
+	simple_uart_putstring("\r\nonstart uv_lamp_door_status->");
+	simple_uart_putstring(uint8_to_string(uv_lamp_door_status));
+	simple_uart_putstring("\r\nonstart elec_lock_status->");
+	simple_uart_putstring(uint8_to_string(elec_lock_status));
+
+	
+
 }
 	
 uint32_t bsp_smart_locker_board_init(uint32_t prescale)
@@ -15041,10 +15058,15 @@ uint32_t bsp_smart_locker_board_init(uint32_t prescale)
    uint32_t err_code;
    smart_locker_local_prescal=prescale;
 	
-   bsp_sls_env_value_init();
+	
 	 bsp_board_leds_init();
 	 bsp_board_switchs_init();
 	 bsp_board_buttons_init();
+	
+	 bsp_sls_env_value_init();
+	 err_code = app_button_enable();
+	
+	 do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 247, (uint8_t*) "..\\bsp_btn_smart_locker.c"); } while (0); } } while (0);
    err_code=app_timer_create(&lock_wait_timer_id,APP_TIMER_MODE_SINGLE_SHOT,bsp_open_elec_lock_wait_timeout_handler);
    do { if (((err_code) != ((0x0) + 0)) && ((err_code) != ((0x0) + 7))) { return err_code; } } while (0);
    err_code=app_timer_create(&sys_run_led_timer_id,APP_TIMER_MODE_REPEATED,bsp_sys_run_led_timeout_handler);
@@ -15074,7 +15096,7 @@ static void bsp_button_event_handler(uint8_t pin_no, uint8_t button_action)
 						  simple_uart_putstring("\r\ncoin box get low!");
           break;						
           default:
-          do { app_error_handler((pin_no), 255, (uint8_t*) "..\\bsp_btn_smart_locker.c"); } while (0);
+          do { app_error_handler((pin_no), 277, (uint8_t*) "..\\bsp_btn_smart_locker.c"); } while (0);
           break;
 				}
 	}
@@ -15096,7 +15118,7 @@ static void bsp_button_event_handler(uint8_t pin_no, uint8_t button_action)
 						  simple_uart_putstring("\r\ncoin box get high!");
           break;						
           default:
-          do { app_error_handler((pin_no), 277, (uint8_t*) "..\\bsp_btn_smart_locker.c"); } while (0);
+          do { app_error_handler((pin_no), 299, (uint8_t*) "..\\bsp_btn_smart_locker.c"); } while (0);
           break;
 				}
 		}

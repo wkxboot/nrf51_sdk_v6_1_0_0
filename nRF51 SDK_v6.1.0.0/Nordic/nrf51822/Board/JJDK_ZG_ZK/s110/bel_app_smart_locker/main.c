@@ -639,7 +639,7 @@ static void ble_stack_init(void)
     uint32_t err_code;
     
     // Initialize the SoftDevice handler module.
-    SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_XTAL_20_PPM, false);
+    SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_1000MS_CALIBRATION, false);
 
     // Enable BLE stack 
     ble_enable_params_t ble_enable_params;
@@ -763,7 +763,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
 
             // Start timers used to generate battery and HR measurements.
             application_timers_start();
-
+            DEBUG_INFO("\r\nstart/restart sending device info!");
             // Start handling button presses
             //err_code = app_button_enable();
             //APP_ERROR_CHECK(err_code);
@@ -778,6 +778,8 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
             // a reset.
             //system_off_mode_enter();
 				    advertising_start();// restart adverting
+				    app_timer_stop(m_send_dev_info_timer_id);//停止发送设备信息
+				    DEBUG_INFO("\r\nstop sending device info!");
             break;
 
         case BLE_GAP_EVT_TIMEOUT:

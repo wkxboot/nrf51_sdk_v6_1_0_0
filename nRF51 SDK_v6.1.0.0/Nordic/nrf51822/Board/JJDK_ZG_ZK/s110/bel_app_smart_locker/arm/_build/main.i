@@ -20234,7 +20234,7 @@ static void ble_stack_init(void)
     uint32_t err_code;
     
     
-    do { static uint32_t EVT_BUFFER[(((((((((sizeof(ble_evt_t) + (23))) < (0) ? (0) : ((sizeof(ble_evt_t) + (23))))) < (sizeof(uint32_t)) ? (sizeof(uint32_t)) : ((((sizeof(ble_evt_t) + (23))) < (0) ? (0) : ((sizeof(ble_evt_t) + (23))))))) - 1) / (sizeof(uint32_t))) + 1)]; uint32_t ERR_CODE; ERR_CODE = softdevice_handler_init((NRF_CLOCK_LFCLKSRC_XTAL_20_PPM), EVT_BUFFER, sizeof(EVT_BUFFER), (0) ? softdevice_evt_schedule : 0); do { const uint32_t LOCAL_ERR_CODE = (ERR_CODE); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 642, (uint8_t*) "..\\main.c"); } while (0); } } while (0); } while (0);
+    do { static uint32_t EVT_BUFFER[(((((((((sizeof(ble_evt_t) + (23))) < (0) ? (0) : ((sizeof(ble_evt_t) + (23))))) < (sizeof(uint32_t)) ? (sizeof(uint32_t)) : ((((sizeof(ble_evt_t) + (23))) < (0) ? (0) : ((sizeof(ble_evt_t) + (23))))))) - 1) / (sizeof(uint32_t))) + 1)]; uint32_t ERR_CODE; ERR_CODE = softdevice_handler_init((NRF_CLOCK_LFCLKSRC_RC_250_PPM_1000MS_CALIBRATION), EVT_BUFFER, sizeof(EVT_BUFFER), (0) ? softdevice_evt_schedule : 0); do { const uint32_t LOCAL_ERR_CODE = (ERR_CODE); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 642, (uint8_t*) "..\\main.c"); } while (0); } } while (0); } while (0);
 
     
     ble_enable_params_t ble_enable_params;
@@ -20358,7 +20358,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
 
             
             application_timers_start();
-
+            simple_uart_putstring("\r\nstart/restart sending device info!");
             
             
             
@@ -20373,6 +20373,8 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
             
             
 				    advertising_start();
+				    app_timer_stop(m_send_dev_info_timer_id);
+				    simple_uart_putstring("\r\nstop sending device info!");
             break;
 
         case BLE_GAP_EVT_TIMEOUT:
@@ -20464,7 +20466,7 @@ static void sys_evt_dispatch(uint32_t sys_evt)
 int main(void)
 {
     uint32_t err_code;
-    simple_uart_config(21,30,0,0,0);
+    simple_uart_config(21,24,0,0,0);
 	  simple_uart_putstring("hello smart_locker!\r\n");
     timers_init();
     gpiote_init();
@@ -20486,7 +20488,7 @@ int main(void)
     {
         
         err_code = sd_app_evt_wait();
-        do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 894, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+        do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 896, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
     }
 }
 

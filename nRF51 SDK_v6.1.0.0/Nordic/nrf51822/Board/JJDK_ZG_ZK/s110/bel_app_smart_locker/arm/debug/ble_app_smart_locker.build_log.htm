@@ -31,7 +31,7 @@ compiling main.c...
 creating preprocessor file for bsp_btn_smart_locker.c...
 compiling bsp_btn_smart_locker.c...
 linking...
-Program Size: Code=27976 RO-data=360 RW-data=328 ZI-data=5768  
+Program Size: Code=28256 RO-data=360 RW-data=328 ZI-data=5768  
 FromELF: creating hex file...
 ".\debug\ble_app_smart_locker.axf" - 0 Error(s), 0 Warning(s).
 
@@ -60,119 +60,9 @@ Package Vendor: NordicSemiconductor
       Source file:   CMSIS\UserCodeTemplates\ARM\ITM_Retarget.c
 
    * Component: NordicSemiconductor::Device:Startup:8.11.1
-      Source file:   Device\Source\system_nrf51.c
       Source file:   Device\Source\arm\arm_startup_nrf51.s
       Include file:  Device\Include\system_nrf51.h
-Load "D:\\development\\nordic_ble\\src_code\\nrf51_sdk_v6_1_0\\nRF51 SDK_v6.1.0.0\\Nordic\\nrf51822\\Board\\JJDK_ZG_ZK\\s110\\bel_app_smart_locker\\arm\\debug\\ble_app_smart_locker.axf" 
-Set JLink Project File to "D:\development\nordic_ble\src_code\nrf51_sdk_v6_1_0\nRF51 SDK_v6.1.0.0\Nordic\nrf51822\Board\JJDK_ZG_ZK\s110\bel_app_smart_locker\arm\JLinkSettings.ini"
-* JLink Info: Device "NRF51822_XXAA" selected.
- 
-JLink info:
-------------
-DLL: V5.12f, compiled May 17 2016 16:03:35
-Firmware: J-Link ARM V8 compiled Jan 31 2018 18:34:52
-Hardware: V8.00
-S/N : 20080643 
-Feature(s) : RDI,FlashDL,FlashBP,JFlash,GDBFull 
- 
-* JLink Info: Found SWD-DP with ID 0x0BB11477
-* JLink Info: Found Cortex-M0 r0p0, Little endian.
-* JLink Info: FPUnit: 4 code (BP) slots and 0 literal slots
-* JLink Info: CoreSight components:
-* JLink Info: ROMTbl 0 @ F0000000
-* JLink Info: ROMTbl 0 [0]: F00FF000, CID: B105100D, PID: 000BB471 ROM Table
-* JLink Info: ROMTbl 1 @ E00FF000
-* JLink Info: ROMTbl 1 [0]: FFF0F000, CID: B105E00D, PID: 000BB008 SCS
-* JLink Info: ROMTbl 1 [1]: FFF02000, CID: B105E00D, PID: 000BB00A DWT
-* JLink Info: ROMTbl 1 [2]: FFF03000, CID: B105E00D, PID: 000BB00B FPB
-* JLink Info: ROMTbl 0 [1]: 00002000, CID: B105900D, PID: 000BB9A3 ???
-ROMTableAddr = 0xE00FF003
- 
-Target info:
-------------
-Device: nRF51822_xxAA
-VTarget = 3.338V
-State of Pins: 
-TCK: 0, TDI: 0, TDO: 0, TMS: 0, TRES: 1, TRST: 0
-Hardware-Breakpoints: 4
-Software-Breakpoints: 8192
-Watchpoints:          2
-JTAG speed: 2000 kHz
- 
-Erase Done.
-Programming Done.
-Verify OK.
+      Source file:   Device\Source\system_nrf51.c
 </pre>
 </body>
 </html>
- for bsp_btn_smart_locker.c...
-compiling bsp_btn_smart_locker.c...
-"..\bsp_btn_smart_locker.c" - 0 Error(s), 0 Warning(s).
-creating preprocessor file for bsp_btn_smart_locker.c...
-compiling bsp_btn_smart_locker.c...
-"..\bsp_btn_smart_locker.c" - 0 Error(s), 0 Warning(s).
-creating preprocessor file for bsp_btn_smart_locker.c...
-compiling bsp_btn_smart_locker.c...
-"..\bsp_btn_smart_locker.c" - 0 Error(s), 0 Warning(s).
-         m_cur_heart_rate = (MAX_HEART_RATE + MIN_HEART_RATE) / 2;
-..\main.c: 0 warnings, 2 errors
-"..\main.c" - 2 Error(s), 0 Warning(s).
-creating preprocessor file for main.c...
-compiling main.c...
-"..\main.c" - 0 Error(s), 0 Warning(s).
-creating preprocessor file for main.c...
-compiling main.c...
-..\main.c(753): warning:  #177-D: variable "err_code" was declared but never referenced
-      uint32_t        err_code;
-..\main.c: 1 warning, 0 errors
-"..\main.c" - 0 Error(s), 1 Warning(s).
-creating preprocessor file for main.c...
-compiling main.c...
-"..\main.c" - 0 Error(s), 0 Warning(s).
-creating preprocessor file for bsp_btn_smart_locker.c...
-compiling bsp_btn_smart_locker.c...
-"..\bsp_btn_smart_locker.c" - 0 Error(s), 0 Warning(s).
-bsp_btn_smart_locker.c" - 0 Error(s), 0 Warning(s).
-creating preprocessor file for main.c...
-compiling main.c...
-"..\main.c" - 0 Error(s), 0 Warning(s).
-main.c...
-..\main.c(466): warning:  #550-D: variable "bas_init" was set but never used
-      ble_bas_init_t bas_init;
-..\main.c(468): warning:  #177-D: variable "body_sensor_location" was declared but never referenced
-      uint8_t        body_sensor_location;
-..\main.c(694): warning:  #223-D: function "led_start" declared implicitly
-      led_start();
-..\main.c(736): warning:  #223-D: function "led_stop" declared implicitly
-              led_stop();
-..\main.c(819): warning:  #223-D: function "ble_hrs_on_ble_evt" declared implicitly
-      ble_hrs_on_ble_evt(&m_hrs, p_ble_evt);
-..\main.c(819): error:  #20: identifier "m_hrs" is undefined
-      ble_hrs_on_ble_evt(&m_hrs, p_ble_evt);
-..\main.c: 5 warnings, 1 error
-"..\main.c" - 1 Error(s), 5 Warning(s).
-creating preprocessor file for main.c...
-compiling main.c...
-..\main.c(466): warning:  #550-D: variable "bas_init" was set but never used
-      ble_bas_init_t bas_init;
-..\main.c(468): warning:  #177-D: variable "body_sensor_location" was declared but never referenced
-      uint8_t        body_sensor_location;
-..\main.c(694): warning:  #223-D: function "led_start" declared implicitly
-      led_start();
-..\main.c(736): warning:  #223-D: function "led_stop" declared implicitly
-              led_stop();
-..\main.c: 4 warnings, 0 errors
-"..\main.c" - 0 Error(s), 4 Warning(s).
-creating preprocessor file for main.c...
-compiling main.c...
-..\main.c(468): warning:  #177-D: variable "body_sensor_location" was declared but never referenced
-      uint8_t        body_sensor_location;
-..\main.c(694): warning:  #223-D: function "led_start" declared implicitly
-      led_start();
-..\main.c(736): warning:  #223-D: function "led_stop" declared implicitly
-              led_stop();
-..\main.c: 3 warnings, 0 errors
-"..\main.c" - 0 Error(s), 3 Warning(s).
-creating preprocessor file for main.c...
-compiling main.c...
-"..\main.c" - 0 Error(s), 0 Warning(s).

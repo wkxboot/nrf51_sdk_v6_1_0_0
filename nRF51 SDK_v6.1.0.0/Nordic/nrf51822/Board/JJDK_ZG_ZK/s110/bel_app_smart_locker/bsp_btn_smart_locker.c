@@ -204,14 +204,31 @@ void bsp_board_buttons_init(void)
 
 static void bsp_sls_env_value_init(void)
 {
+
 	 uv_lamp_cmd          = CONTROL_CMD_STOP;
    fan_negative_ion_cmd = CONTROL_CMD_STOP;
    elec_lock_cmd        = CONTROL_CMD_STOP;
 
-   uv_lamp_status          = DEVICE_STATUS_STOP;
-   uv_lamp_door_status     = DEVICE_STATUS_STOP;
-   fan_negative_ion_status = DEVICE_STATUS_STOP;
-   elec_lock_status        = DEVICE_STATUS_STOP;
+	if(bsp_board_button_state_get(BUTTON_UV_LAMP_DOOR_PIN_NO))
+  uv_lamp_door_status     = DEVICE_STATUS_RUN;
+	else
+  uv_lamp_door_status     = DEVICE_STATUS_STOP;
+	
+	if(bsp_board_button_state_get(BUTTON_ELEC_LOCK_PIN_NO))
+	elec_lock_status     = DEVICE_STATUS_RUN;
+	else
+  elec_lock_status     = DEVICE_STATUS_STOP;;
+	
+  uv_lamp_status          = DEVICE_STATUS_STOP;   
+  fan_negative_ion_status = DEVICE_STATUS_STOP;
+	
+	DEBUG_INFO("\r\nonstart uv_lamp_door_status->");
+	DEBUG_INFO(uint8_to_string(uv_lamp_door_status));
+	DEBUG_INFO("\r\nonstart elec_lock_status->");
+	DEBUG_INFO(uint8_to_string(elec_lock_status));
+
+	
+
 }
 	
 uint32_t bsp_smart_locker_board_init(uint32_t prescale)
@@ -219,10 +236,15 @@ uint32_t bsp_smart_locker_board_init(uint32_t prescale)
    uint32_t err_code;
    smart_locker_local_prescal=prescale;
 	
-   bsp_sls_env_value_init();
+	
 	 bsp_board_leds_init();
 	 bsp_board_switchs_init();
 	 bsp_board_buttons_init();
+	
+	 bsp_sls_env_value_init();
+	 err_code = app_button_enable();//Ê¹ÄÜÒý½Å¼ì²â
+	
+	 APP_ERROR_CHECK(err_code);
    err_code=app_timer_create(&lock_wait_timer_id,APP_TIMER_MODE_SINGLE_SHOT,bsp_open_elec_lock_wait_timeout_handler);
    RETURN_ON_ERROR_NOT_INVALID_PARAM(err_code);
    err_code=app_timer_create(&sys_run_led_timer_id,APP_TIMER_MODE_REPEATED,bsp_sys_run_led_timeout_handler);
