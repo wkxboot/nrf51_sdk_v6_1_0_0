@@ -29,7 +29,6 @@
 .\debug\main.o: ..\..\..\..\..\Include\app_common\app_util.h
 .\debug\main.o: ..\..\..\..\..\Include\ble\ble_advdata.h
 .\debug\main.o: ..\..\..\..\..\Include\ble\ble_services\ble_bas.h
-.\debug\main.o: ..\..\..\..\..\Include\ble\ble_services\ble_hrs.h
 .\debug\main.o: ..\..\..\..\..\Include\ble\ble_services\ble_sls.h
 .\debug\main.o: ..\..\..\..\..\Include\ble\ble_services\ble_dis.h
 .\debug\main.o: ..\..\..\..\..\Include\ble\ble_conn_params.h
@@ -47,7 +46,6 @@
 .\debug\main.o: ..\..\..\..\..\Include\sd_common\ant_stack_handler_types.h
 .\debug\main.o: ..\..\..\..\..\Include\app_common\app_timer.h
 .\debug\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
-.\debug\main.o: ..\led.h
 .\debug\main.o: ..\battery.h
 .\debug\main.o: ..\..\..\..\..\Include\ble\device_manager\device_manager.h
 .\debug\main.o: ..\..\..\..\..\Include\sdk\sdk_common.h

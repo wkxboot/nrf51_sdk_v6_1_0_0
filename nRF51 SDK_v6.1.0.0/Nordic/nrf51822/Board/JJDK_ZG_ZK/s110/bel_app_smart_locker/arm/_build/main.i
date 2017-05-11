@@ -13187,196 +13187,6 @@ uint32_t ble_bas_battery_level_update(ble_bas_t * p_bas, uint8_t battery_level);
 
  
 #line 35 "..\\main.c"
-#line 1 "..\\..\\..\\..\\..\\Include\\ble\\ble_services\\ble_hrs.h"
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-#line 48 "..\\..\\..\\..\\..\\Include\\ble\\ble_services\\ble_hrs.h"
-#line 49 "..\\..\\..\\..\\..\\Include\\ble\\ble_services\\ble_hrs.h"
-#line 50 "..\\..\\..\\..\\..\\Include\\ble\\ble_services\\ble_hrs.h"
-#line 51 "..\\..\\..\\..\\..\\Include\\ble\\ble_services\\ble_hrs.h"
-
-
-#line 60 "..\\..\\..\\..\\..\\Include\\ble\\ble_services\\ble_hrs.h"
-
-
-
- 
-typedef enum
-{
-    BLE_HRS_EVT_NOTIFICATION_ENABLED,                    
-    BLE_HRS_EVT_NOTIFICATION_DISABLED                    
-} ble_hrs_evt_type_t;
-
- 
-typedef struct
-{
-    ble_hrs_evt_type_t evt_type;                         
-} ble_hrs_evt_t;
-
-
-typedef struct ble_hrs_s ble_hrs_t;
-
- 
-typedef void (*ble_hrs_evt_handler_t) (ble_hrs_t * p_hrs, ble_hrs_evt_t * p_evt);
-
-
- 
-typedef struct
-{
-    ble_hrs_evt_handler_t        evt_handler;                                           
-    _Bool                         is_sensor_contact_supported;                           
-    uint8_t *                    p_body_sensor_location;                                
-    ble_srv_cccd_security_mode_t hrs_hrm_attr_md;                                       
-    ble_srv_security_mode_t      hrs_bsl_attr_md;                                       
-} ble_hrs_init_t;
-
- 
-typedef struct ble_hrs_s
-{
-    ble_hrs_evt_handler_t        evt_handler;                                           
-    _Bool                         is_expended_energy_supported;                          
-    _Bool                         is_sensor_contact_supported;                           
-    uint16_t                     service_handle;                                        
-    ble_gatts_char_handles_t     hrm_handles;                                           
-    ble_gatts_char_handles_t     bsl_handles;                                           
-    ble_gatts_char_handles_t     hrcp_handles;                                          
-    uint16_t                     conn_handle;                                           
-    _Bool                         is_sensor_contact_detected;                            
-    uint16_t                     rr_interval[20];        
-    uint16_t                     rr_interval_count;                                     
-} ble_hrs_t;
-
-
-
-
-
-
-
-
-
- 
-uint32_t ble_hrs_init(ble_hrs_t * p_hrs, const ble_hrs_init_t * p_hrs_init);
-
-
-
-
-
-
-
- 
-void ble_hrs_on_ble_evt(ble_hrs_t * p_hrs, ble_evt_t * p_ble_evt);
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-uint32_t ble_hrs_heart_rate_measurement_send(ble_hrs_t * p_hrs, uint16_t heart_rate);
-
-
-
-
-
-
-
-
-
-
- 
-void ble_hrs_rr_interval_add(ble_hrs_t * p_hrs, uint16_t rr_interval);
-
-
-
-
-
-
- 
-_Bool ble_hrs_rr_interval_buffer_is_full(ble_hrs_t * p_hrs);
-
-
-
-
-
-
-
- 
-uint32_t ble_hrs_sensor_contact_supported_set(ble_hrs_t * p_hrs, _Bool is_sensor_contact_supported);
-
-
-
-
-
- 
-void ble_hrs_sensor_contact_detected_update(ble_hrs_t * p_hrs, _Bool is_sensor_contact_detected);
-
-
-
-
-
-
-
-
-
-
- 
-uint32_t ble_hrs_body_sensor_location_set(ble_hrs_t * p_hrs, uint8_t body_sensor_location);
-
-
-
- 
-#line 36 "..\\main.c"
 #line 1 "..\\..\\..\\..\\..\\Include\\ble\\ble_services\\ble_sls.h"
 
 
@@ -13472,10 +13282,13 @@ typedef struct ble_sls_s
     ble_sls_evt_handler_t        evt_handler;                                   
  
     uint16_t                     service_handle;                                
-    ble_gatts_char_handles_t     uv_lamp_handles;                               
-		ble_gatts_char_handles_t     uv_lamp_door_handles;                          
-    ble_gatts_char_handles_t     fan_negative_ion_handles;                      
-    ble_gatts_char_handles_t     elec_lock_handles;                             
+    ble_gatts_char_handles_t     uv_lamp_cmd_handles;                               
+		ble_gatts_char_handles_t     uv_lamp_status_handles;
+	  ble_gatts_char_handles_t     uv_lamp_door_status_handles;                          
+    ble_gatts_char_handles_t     fan_negative_ion_cmd_handles;                      
+    ble_gatts_char_handles_t     fan_negative_ion_status_handles;
+	  ble_gatts_char_handles_t     elec_lock_cmd_handles;
+  	ble_gatts_char_handles_t     elec_lock_status_handles;                             
     uint16_t                     conn_handle;                                    
   
 } ble_sls_t;
@@ -13504,7 +13317,7 @@ void ble_sls_device_notify_dev_info_timer_handler(void *p_context);
 
 
  
-#line 37 "..\\main.c"
+#line 36 "..\\main.c"
 #line 1 "..\\..\\..\\..\\..\\Include\\ble\\ble_services\\ble_dis.h"
 
 
@@ -13601,7 +13414,7 @@ uint32_t ble_dis_init(const ble_dis_init_t * p_dis_init);
 
 
  
-#line 38 "..\\main.c"
+#line 37 "..\\main.c"
 #line 1 "..\\..\\..\\..\\..\\Include\\ble\\ble_conn_params.h"
 
 
@@ -13714,7 +13527,7 @@ void ble_conn_params_on_ble_evt(ble_evt_t * p_ble_evt);
 
 
  
-#line 39 "..\\main.c"
+#line 38 "..\\main.c"
 #line 1 "..\\..\\..\\..\\..\\Include\\boards.h"
 
 
@@ -14256,7 +14069,7 @@ static __inline void nrf_gpio_port_clear(nrf_gpio_port_select_t port, uint8_t cl
 
 
 
-#line 40 "..\\main.c"
+#line 39 "..\\main.c"
 #line 1 "..\\..\\..\\..\\..\\Include\\sd_common\\softdevice_handler.h"
 
 
@@ -16580,7 +16393,7 @@ static __inline uint32_t softdevice_evt_schedule(void)
 
 
  
-#line 41 "..\\main.c"
+#line 40 "..\\main.c"
 #line 1 "..\\..\\..\\..\\..\\Include\\app_common\\app_timer.h"
 
 
@@ -17733,56 +17546,8 @@ static __inline uint32_t app_timer_evt_schedule(app_timer_timeout_handler_t time
 
 
  
+#line 41 "..\\main.c"
 #line 42 "..\\main.c"
-#line 43 "..\\main.c"
-#line 1 "..\\led.h"
-
-
-
-
-
-
-
-
-
-
- 
-
-  
- 
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
-
-
-
- 
-void led_start(void);
-
-
-
-
-
- 
-void led_stop(void);
-
-
-
- 
- 
-#line 44 "..\\main.c"
 #line 1 "..\\battery.h"
 
 
@@ -17819,7 +17584,7 @@ void battery_start(void);
 
  
  
-#line 45 "..\\main.c"
+#line 43 "..\\main.c"
 #line 1 "..\\..\\..\\..\\..\\Include\\ble\\device_manager\\device_manager.h"
 
 
@@ -18904,7 +18669,7 @@ api_result_t dm_handle_initialize(dm_handle_t * p_handle);
  
 
 
-#line 46 "..\\main.c"
+#line 44 "..\\main.c"
 #line 1 "..\\..\\..\\..\\..\\Include\\app_common\\app_gpiote.h"
 
 
@@ -19119,7 +18884,7 @@ uint32_t app_gpiote_disable_interrupts(void);
 
 
  
-#line 47 "..\\main.c"
+#line 45 "..\\main.c"
 #line 1 "..\\..\\..\\..\\..\\Include\\app_common\\app_button.h"
 
 
@@ -19301,7 +19066,7 @@ static __inline uint32_t app_button_evt_schedule(app_button_handler_t button_han
 
 
  
-#line 48 "..\\main.c"
+#line 46 "..\\main.c"
 #line 1 "..\\..\\..\\..\\..\\Include\\ble\\ble_debug_assert_handler.h"
 
 
@@ -19350,7 +19115,7 @@ static __inline uint32_t app_button_evt_schedule(app_button_handler_t button_han
  
 void ble_debug_assert_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name);
 
-#line 49 "..\\main.c"
+#line 47 "..\\main.c"
 #line 1 "..\\..\\..\\..\\..\\Include\\app_common\\pstorage.h"
 
 
@@ -19715,7 +19480,7 @@ uint32_t pstorage_access_status_get(uint32_t * p_count);
 
 
 
-#line 50 "..\\main.c"
+#line 48 "..\\main.c"
 #line 1 "..\\..\\..\\..\\..\\Include\\app_common\\app_trace.h"
 
 
@@ -19741,7 +19506,7 @@ uint32_t pstorage_access_status_get(uint32_t * p_count);
 
  
 
-#line 51 "..\\main.c"
+#line 49 "..\\main.c"
 #line 1 "..\\..\\..\\..\\..\\Include\\simple_uart.h"
  
 
@@ -19814,8 +19579,14 @@ void simple_uart_config(uint8_t rts_pin_number, uint8_t txd_pin_number, uint8_t 
  
 
  
-#line 52 "..\\main.c"
+#line 50 "..\\main.c"
 #line 1 "..\\bsp_btn_smart_locker.h"
+
+
+
+
+
+
 
 
 
@@ -19870,9 +19641,14 @@ _Bool bsp_board_button_state_get(uint32_t button_pin);
 void bsp_board_buttons_init(void);
 
 
+ void bsp_cb_on_uv_lamp_cmd_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write);
+ void bsp_cb_on_fan_negative_ion_cmd_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write);
+ void bsp_cb_on_elec_lock_cmd_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write);
+
 uint32_t bsp_smart_locker_board_init(uint32_t prescale);
 
-#line 53 "..\\main.c"
+uint8_t *uint8_to_string(uint8_t src);
+#line 51 "..\\main.c"
 
 
 
@@ -19894,7 +19670,6 @@ uint32_t bsp_smart_locker_board_init(uint32_t prescale);
 
 
 
-#line 80 "..\\main.c"
 
 
 
@@ -19909,10 +19684,14 @@ uint32_t bsp_smart_locker_board_init(uint32_t prescale);
 
 
 
-#line 101 "..\\main.c"
+#line 93 "..\\main.c"
 
 
 
+ extern uint8_t uv_lamp_cmd;
+ extern uint8_t fan_negative_ion_cmd;
+ extern uint8_t elec_lock_cmd;
+ 
  extern uint8_t uv_lamp_status;
  extern uint8_t fan_negative_ion_status;
  extern uint8_t elec_lock_status;
@@ -19921,11 +19700,11 @@ uint32_t bsp_smart_locker_board_init(uint32_t prescale);
 static ble_gap_adv_params_t                  m_adv_params;                               
 ble_bas_t                                    bas;                                        
 static ble_sls_t                             m_sls;
-static ble_hrs_t                             m_hrs;                                      
+
 static volatile uint16_t                     m_cur_heart_rate;                           
                                                                                        
 static app_timer_id_t                        m_battery_timer_id;                         
-static app_timer_id_t                        m_heart_rate_timer_id;                      
+
 static app_timer_id_t                        m_send_dev_info_timer_id;
 static _Bool                                  m_memory_access_in_progress = 0;        
 static dm_application_instance_t             m_app_handle;                               
@@ -19987,7 +19766,7 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
  
 static void conn_params_error_handler(uint32_t nrf_error)
 {
-    do { app_error_handler((nrf_error), 178, (uint8_t*) "..\\main.c"); } while (0);
+    do { app_error_handler((nrf_error), 174, (uint8_t*) "..\\main.c"); } while (0);
 }
 
 
@@ -20019,69 +19798,95 @@ static void battery_level_meas_timeout_handler(void * p_context)
 
 
 
- 
-static void heart_rate_meas_timeout_handler(void * p_context)
-{
-    uint32_t err_code;
 
-    ((void)(p_context));
 
-    err_code = ble_hrs_heart_rate_measurement_send(&m_hrs, m_cur_heart_rate);
 
-    if (
-        (err_code != ((0x0) + 0))
-        &&
-        (err_code != ((0x0) + 8))
-        &&
-        (err_code != ((0x3000)+0x004))
-        &&
-        (err_code != (((0x3000)+0x400) + 0x001))
-    )
-    {
-        do { app_error_handler((err_code), 229, (uint8_t*) "..\\main.c"); } while (0);
-    }
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 static void app_send_device_info_timeout_handler(void * p_context)
 {
 	uint32_t err_code;
 	((void)(p_context));
-	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->uv_lamp_handles.value_handle,(uint8_t*)&uv_lamp_status,1);
+	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->uv_lamp_cmd_handles.value_handle,&uv_lamp_cmd,1);
 	if(err_code!=((0x0) + 0))
 	{
-		simple_uart_putstring("notify failed!_uv_lamp\r\n");
+		simple_uart_putstring("\r\nnotify failed!uv_lamp_cmd!");
 	}
 	else
 	{
-	  simple_uart_putstring("notify successed!_uv_lamp\r\n");	
+	  simple_uart_putstring("\r\nnotify successed!uv_lamp_cmd!");	
 	}
-	
-	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->uv_lamp_door_handles.value_handle,(uint8_t*)&uv_lamp_door_status,1);
+	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->uv_lamp_status_handles.value_handle,&uv_lamp_status,1);
 	if(err_code!=((0x0) + 0))
 	{
-		simple_uart_putstring("notify failed!_uv_lamp_door\r\n");
+		simple_uart_putstring("\r\nnotify failed!uv_lamp_status!");
 	}
 	else
 	{
-	  simple_uart_putstring("notify successed!_uv_lamp_door\r\n");	
+	  simple_uart_putstring("\r\nnotify successed!uv_lamp_status!");	
 	}
-	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->fan_negative_ion_handles.value_handle,(uint8_t*)&fan_negative_ion_status,1);
+	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->uv_lamp_door_status_handles.value_handle,(uint8_t*)&uv_lamp_door_status,1);
+	if(err_code!=((0x0) + 0))
+	{
+		simple_uart_putstring("\r\nnotify failed!_uv_lamp_door!");
+	}
+	else
+	{
+	  simple_uart_putstring("\r\nnotify successed!_uv_lamp_door!");	
+	}
+	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->fan_negative_ion_cmd_handles.value_handle,(uint8_t*)&fan_negative_ion_cmd,1);
 		if(err_code!=((0x0) + 0))
 	{
-		simple_uart_putstring("notify failed!fan\r\n");
+		simple_uart_putstring("\r\nnotify failed!fan_negative_ion_cmd!");
 	}
 	else
 	{
-	  simple_uart_putstring("notify successed!fan\r\n");	
+	  simple_uart_putstring("\r\nnotify successed!fan_negative_ion_cmd!");	
 	}
-	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->elec_lock_handles.value_handle,(uint8_t*)&elec_lock_status,1);
+		err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->fan_negative_ion_status_handles.value_handle,(uint8_t*)&fan_negative_ion_status,1);
 		if(err_code!=((0x0) + 0))
 	{
-		simple_uart_putstring("notify failed!lock\r\n");
+		simple_uart_putstring("\r\nnotify failed!fan_negative_ion_status!");
 	}
 	else
 	{
-	  simple_uart_putstring("notify successed!lock\r\n");	
+	  simple_uart_putstring("\r\nnotify successed!fan_negative_ion_status!");	
+	}
+	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->elec_lock_cmd_handles.value_handle,(uint8_t*)&elec_lock_cmd,1);
+		if(err_code!=((0x0) + 0))
+	{
+		simple_uart_putstring("\r\nnotify failed!elec_lock_cmd");
+	}
+	else
+	{
+	  simple_uart_putstring("\r\nnotify successed!elec_lock_cmd!");	
+	}
+		err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->elec_lock_status_handles.value_handle,(uint8_t*)&elec_lock_status,1);
+		if(err_code!=((0x0) + 0))
+	{
+		simple_uart_putstring("\r\nnotify failed!elec_lock_status");
+	}
+	else
+	{
+	  simple_uart_putstring("\r\nnotify successed!elec_lock_status!");	
 	}
 }
 
@@ -20171,23 +19976,23 @@ static void timers_init(void)
     uint32_t err_code;
 
     
-    do { static uint32_t APP_TIMER_BUF[((((( (((8)) * 40) + ( 3 * (8 + (((5) + 1) + 1) * 24) ) )) - 1) / (sizeof(uint32_t))) + 1)]; uint32_t ERR_CODE = app_timer_init((0), (8), (5) + 1, APP_TIMER_BUF, (0) ? app_timer_evt_schedule : 0); do { const uint32_t LOCAL_ERR_CODE = (ERR_CODE); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 362, (uint8_t*) "..\\main.c"); } while (0); } } while (0); } while (0);
+    do { static uint32_t APP_TIMER_BUF[((((( (((8)) * 40) + ( 3 * (8 + (((5) + 1) + 1) * 24) ) )) - 1) / (sizeof(uint32_t))) + 1)]; uint32_t ERR_CODE = app_timer_init((0), (8), (5) + 1, APP_TIMER_BUF, (0) ? app_timer_evt_schedule : 0); do { const uint32_t LOCAL_ERR_CODE = (ERR_CODE); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 384, (uint8_t*) "..\\main.c"); } while (0); } } while (0); } while (0);
 
     
     err_code = app_timer_create(&m_battery_timer_id,
                                 APP_TIMER_MODE_REPEATED,
                                 battery_level_meas_timeout_handler);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 368, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 390, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
 
-    err_code = app_timer_create(&m_heart_rate_timer_id,
-                                APP_TIMER_MODE_REPEATED,
-                                heart_rate_meas_timeout_handler);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 373, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+
+
+
+
 	
     err_code = app_timer_create(&m_send_dev_info_timer_id,
                                 APP_TIMER_MODE_REPEATED,
                                 app_send_device_info_timeout_handler);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 378, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 400, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
 }
 
 
@@ -20207,10 +20012,10 @@ static void gap_params_init(void)
     err_code = sd_ble_gap_device_name_set(&sec_mode,
                                           (const uint8_t *)"SMART_LOCKER",
                                           strlen("SMART_LOCKER"));
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 398, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 420, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
 
     err_code = sd_ble_gap_appearance_set(833);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 401, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 423, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
 
     memset(&gap_conn_params, 0, sizeof(gap_conn_params));
 
@@ -20220,7 +20025,7 @@ static void gap_params_init(void)
     gap_conn_params.conn_sup_timeout  = (((4000) * 1000) / (UNIT_10_MS));
 
     err_code = sd_ble_gap_ppcp_set(&gap_conn_params);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 411, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 433, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
 }
 
 
@@ -20253,7 +20058,7 @@ static void advertising_init(void)
     advdata.uuids_complete.p_uuids  = adv_uuids;
 
     err_code = ble_advdata_set(&advdata, 0);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 444, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 466, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
 
     
     memset(&m_adv_params, 0, sizeof(m_adv_params));
@@ -20274,10 +20079,10 @@ static void services_init(void)
 {
     uint32_t       err_code;
 	  ble_sls_init_t sls_init;
-    ble_hrs_init_t hrs_init;
+    
     ble_bas_init_t bas_init;
     ble_dis_init_t dis_init;
-    uint8_t        body_sensor_location;
+    
 
 	    
     memset(&sls_init, 0, sizeof(sls_init));
@@ -20295,26 +20100,26 @@ static void services_init(void)
     bas_init.initial_batt_level   = 100;
 
     err_code = ble_sls_init(&m_sls, &sls_init);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 486, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 508, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
 	
-    
-    body_sensor_location = 3;
 
-    memset(&hrs_init, 0, sizeof(hrs_init));
 
-    hrs_init.is_sensor_contact_supported = 0;
-    hrs_init.p_body_sensor_location      = &body_sensor_location;
 
-    
-    do {(&hrs_init . hrs_hrm_attr_md . cccd_write_perm)->sm = 1; (&hrs_init . hrs_hrm_attr_md . cccd_write_perm)->lv = 1;} while(0);
-    do {(&hrs_init . hrs_hrm_attr_md . read_perm)->sm = 0; (&hrs_init . hrs_hrm_attr_md . read_perm)->lv = 0;} while(0);
-    do {(&hrs_init . hrs_hrm_attr_md . write_perm)->sm = 0; (&hrs_init . hrs_hrm_attr_md . write_perm)->lv = 0;} while(0);
 
-    do {(&hrs_init . hrs_bsl_attr_md . read_perm)->sm = 1; (&hrs_init . hrs_bsl_attr_md . read_perm)->lv = 1;} while(0);
-    do {(&hrs_init . hrs_bsl_attr_md . write_perm)->sm = 0; (&hrs_init . hrs_bsl_attr_md . write_perm)->lv = 0;} while(0);
 
-    err_code = ble_hrs_init(&m_hrs, &hrs_init);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 505, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     
     memset(&bas_init, 0, sizeof(bas_init));
@@ -20332,7 +20137,7 @@ static void services_init(void)
     bas_init.initial_batt_level   = 100;
 
     err_code = ble_bas_init(&bas, &bas_init);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 523, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 545, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
 
     
     memset(&dis_init, 0, sizeof(dis_init));
@@ -20343,7 +20148,7 @@ static void services_init(void)
     do {(&dis_init . dis_attr_md . write_perm)->sm = 0; (&dis_init . dis_attr_md . write_perm)->lv = 0;} while(0);
 
     err_code = ble_dis_init(&dis_init);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 534, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 556, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
 }
 
 
@@ -20362,13 +20167,13 @@ static void conn_params_init(void)
     cp_init.first_conn_params_update_delay = ((uint32_t)((((5000) * (uint64_t)32768) + ((((0) + 1) * 1000) / 2)) / (((0) + 1) * 1000)));
     cp_init.next_conn_params_update_delay  = ((uint32_t)((((30000) * (uint64_t)32768) + ((((0) + 1) * 1000) / 2)) / (((0) + 1) * 1000)));
     cp_init.max_conn_params_update_count   = 3;
-    cp_init.start_on_notify_cccd_handle    = m_hrs.hrm_handles.cccd_handle;
+    cp_init.start_on_notify_cccd_handle    =0x0000;
     cp_init.disconnect_on_fail             = 1;
     cp_init.evt_handler                    = 0;
     cp_init.error_handler                  = conn_params_error_handler;
 
     err_code = ble_conn_params_init(&cp_init);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 559, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 581, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
 }
 
 
@@ -20380,7 +20185,7 @@ static uint32_t device_manager_evt_handler(dm_handle_t const    * p_handle,
                                            dm_event_t const     * p_event,
                                            api_result_t           event_result)
 {
-    do { const uint32_t LOCAL_ERR_CODE = (event_result); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 571, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (event_result); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 593, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
     return ((0x0) + 0);
 }
 
@@ -20395,13 +20200,13 @@ static void device_manager_init(void)
     
     
     err_code = pstorage_init();
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 586, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 608, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
 
     
     init_data.clear_persistent_data = 0;
 
     err_code = dm_init(&init_data);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 592, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 614, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
 
     memset(&register_param.sec_param, 0, sizeof(ble_gap_sec_params_t));
     
@@ -20416,7 +20221,7 @@ static void device_manager_init(void)
     register_param.service_type           = 0x01;
 
     err_code = dm_register(&m_app_handle, &register_param);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 607, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 629, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
 }
 
 
@@ -20429,22 +20234,22 @@ static void ble_stack_init(void)
     uint32_t err_code;
     
     
-    do { static uint32_t EVT_BUFFER[(((((((((sizeof(ble_evt_t) + (23))) < (0) ? (0) : ((sizeof(ble_evt_t) + (23))))) < (sizeof(uint32_t)) ? (sizeof(uint32_t)) : ((((sizeof(ble_evt_t) + (23))) < (0) ? (0) : ((sizeof(ble_evt_t) + (23))))))) - 1) / (sizeof(uint32_t))) + 1)]; uint32_t ERR_CODE; ERR_CODE = softdevice_handler_init((NRF_CLOCK_LFCLKSRC_XTAL_20_PPM), EVT_BUFFER, sizeof(EVT_BUFFER), (0) ? softdevice_evt_schedule : 0); do { const uint32_t LOCAL_ERR_CODE = (ERR_CODE); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 620, (uint8_t*) "..\\main.c"); } while (0); } } while (0); } while (0);
+    do { static uint32_t EVT_BUFFER[(((((((((sizeof(ble_evt_t) + (23))) < (0) ? (0) : ((sizeof(ble_evt_t) + (23))))) < (sizeof(uint32_t)) ? (sizeof(uint32_t)) : ((((sizeof(ble_evt_t) + (23))) < (0) ? (0) : ((sizeof(ble_evt_t) + (23))))))) - 1) / (sizeof(uint32_t))) + 1)]; uint32_t ERR_CODE; ERR_CODE = softdevice_handler_init((NRF_CLOCK_LFCLKSRC_XTAL_20_PPM), EVT_BUFFER, sizeof(EVT_BUFFER), (0) ? softdevice_evt_schedule : 0); do { const uint32_t LOCAL_ERR_CODE = (ERR_CODE); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 642, (uint8_t*) "..\\main.c"); } while (0); } } while (0); } while (0);
 
     
     ble_enable_params_t ble_enable_params;
     memset(&ble_enable_params, 0, sizeof(ble_enable_params));
     ble_enable_params.gatts_enable_params.service_changed = 0;
     err_code = sd_ble_enable(&ble_enable_params);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 627, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 649, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
 
     
     err_code = softdevice_ble_evt_handler_set(ble_evt_dispatch);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 631, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 653, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
     
     
     err_code = softdevice_sys_evt_handler_set(sys_evt_dispatch);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 635, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 657, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
 }
 
 
@@ -20452,7 +20257,7 @@ static void ble_stack_init(void)
  
 static void gpiote_init(void)
 {
-    do { static uint32_t app_gpiote_buf[((((((1) * 20)) - 1) / (sizeof(uint32_t))) + 1)]; uint32_t ERR_CODE = app_gpiote_init((1), app_gpiote_buf); do { const uint32_t LOCAL_ERR_CODE = (ERR_CODE); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 643, (uint8_t*) "..\\main.c"); } while (0); } } while (0); } while (0);
+    do { static uint32_t app_gpiote_buf[((((((1) * 20)) - 1) / (sizeof(uint32_t))) + 1)]; uint32_t ERR_CODE = app_gpiote_init((1), app_gpiote_buf); do { const uint32_t LOCAL_ERR_CODE = (ERR_CODE); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 665, (uint8_t*) "..\\main.c"); } while (0); } } while (0); } while (0);
 }
 
 
@@ -20485,12 +20290,12 @@ static void application_timers_start(void)
 
     
     err_code = app_timer_start(m_battery_timer_id, ((uint32_t)((((2000) * (uint64_t)32768) + ((((0) + 1) * 1000) / 2)) / (((0) + 1) * 1000))), 0);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 676, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 698, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
 
-    err_code = app_timer_start(m_heart_rate_timer_id, ((uint32_t)((((1000) * (uint64_t)32768) + ((((0) + 1) * 1000) / 2)) / (((0) + 1) * 1000))), 0);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 679, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
-	  err_code = app_timer_start(m_send_dev_info_timer_id, ((uint32_t)((((1000) * (uint64_t)32768) + ((((0) + 1) * 1000) / 2)) / (((0) + 1) * 1000))), 0);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 681, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+
+
+	  err_code = app_timer_start(m_send_dev_info_timer_id, ((uint32_t)((((10000) * (uint64_t)32768) + ((((0) + 1) * 1000) / 2)) / (((0) + 1) * 1000))), 0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 703, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
 }
 
 
@@ -20501,9 +20306,9 @@ static void advertising_start(void)
     uint32_t err_code;
 
     err_code = sd_ble_gap_adv_start(&m_adv_params);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 692, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 714, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
 
-    led_start();
+    
 }
 
 
@@ -20517,7 +20322,7 @@ static void system_off_mode_enter(void)
     
     
     err_code = pstorage_access_status_get(&count);
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 708, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 730, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
     
     if (count != 0)
     {
@@ -20526,7 +20331,7 @@ static void system_off_mode_enter(void)
     }
 
     err_code = sd_power_system_off();
-    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 717, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+    do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 739, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
 }
 
 
@@ -20540,23 +20345,23 @@ static void system_off_mode_enter(void)
  
 static void on_ble_evt(ble_evt_t * p_ble_evt)
 {
-    uint32_t        err_code;
+    
 
     switch (p_ble_evt->header.evt_id)
     {
         case BLE_GAP_EVT_CONNECTED:
-            led_stop();
             
             
             
-            m_cur_heart_rate = (300 + 60) / 2;
+            
+            
 
             
             application_timers_start();
 
             
-            err_code = app_button_enable();
-            do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 747, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+            
+            
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:            
@@ -20628,7 +20433,7 @@ static void on_sys_evt(uint32_t sys_evt)
 static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
 {
     dm_ble_evt_handler(p_ble_evt);
-    ble_hrs_on_ble_evt(&m_hrs, p_ble_evt);
+    
     ble_bas_on_ble_evt(&bas, p_ble_evt);
 	  ble_sls_on_ble_evt(&m_sls,p_ble_evt);
     ble_conn_params_on_ble_evt(p_ble_evt);
@@ -20660,7 +20465,7 @@ int main(void)
 {
     uint32_t err_code;
     simple_uart_config(21,30,0,0,0);
-	  simple_uart_putstring("hello world!\r\n");
+	  simple_uart_putstring("hello smart_locker!\r\n");
     timers_init();
     gpiote_init();
     bsp_smart_locker_board_init(0);
@@ -20681,7 +20486,7 @@ int main(void)
     {
         
         err_code = sd_app_evt_wait();
-        do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 872, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
+        do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 894, (uint8_t*) "..\\main.c"); } while (0); } } while (0);
     }
 }
 

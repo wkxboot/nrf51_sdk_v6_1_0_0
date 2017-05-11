@@ -4234,10 +4234,13 @@ typedef struct ble_sls_s
     ble_sls_evt_handler_t        evt_handler;                                   
  
     uint16_t                     service_handle;                                
-    ble_gatts_char_handles_t     uv_lamp_handles;                               
-		ble_gatts_char_handles_t     uv_lamp_door_handles;                          
-    ble_gatts_char_handles_t     fan_negative_ion_handles;                      
-    ble_gatts_char_handles_t     elec_lock_handles;                             
+    ble_gatts_char_handles_t     uv_lamp_cmd_handles;                               
+		ble_gatts_char_handles_t     uv_lamp_status_handles;
+	  ble_gatts_char_handles_t     uv_lamp_door_status_handles;                          
+    ble_gatts_char_handles_t     fan_negative_ion_cmd_handles;                      
+    ble_gatts_char_handles_t     fan_negative_ion_status_handles;
+	  ble_gatts_char_handles_t     elec_lock_cmd_handles;
+  	ble_gatts_char_handles_t     elec_lock_status_handles;                             
     uint16_t                     conn_handle;                                    
   
 } ble_sls_t;
@@ -4297,12 +4300,23 @@ void ble_sls_device_notify_dev_info_timer_handler(void *p_context);
 
 
 
-#line 40 "..\\bsp_btn_smart_locker.h"
 
-#line 54 "..\\bsp_btn_smart_locker.h"
+
+
+
+
+
+#line 46 "..\\bsp_btn_smart_locker.h"
+
+#line 60 "..\\bsp_btn_smart_locker.h"
+
+ void bsp_cb_on_uv_lamp_cmd_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write);
+ void bsp_cb_on_fan_negative_ion_cmd_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write);
+ void bsp_cb_on_elec_lock_cmd_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write);
 
 uint32_t bsp_smart_locker_board_init(uint32_t prescale);
 
+uint8_t *uint8_to_string(uint8_t src);
 #line 26 "..\\..\\..\\..\\..\\Source\\ble\\ble_services\\ble_sls.c"
 
 
@@ -4311,25 +4325,24 @@ uint32_t bsp_smart_locker_board_init(uint32_t prescale);
 
 
 
+#line 41 "..\\..\\..\\..\\..\\Source\\ble\\ble_services\\ble_sls.c"
 
 
 
 
 
-         
 
-uint8_t uv_lamp_cmd[((23) - 1 - 2)],uv_lamp_door_cmd[((23) - 1 - 2)],fan_negative_ion_cmd[((23) - 1 - 2)],elec_lock_cmd[((23) - 1 - 2)];
 
-extern   uint8_t uv_lamp_status;
-extern   uint8_t fan_negative_ion_status;
-extern   uint8_t elec_lock_status;
-extern   uint8_t uv_lamp_door_status;
+uint8_t uv_lamp_cmd;
+uint8_t fan_negative_ion_cmd;
+uint8_t elec_lock_cmd;
 
-static void on_uv_lamp_cccd_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write);
-static void on_uv_lamp_value_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write);
-static void on_uv_lamp_door_value_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write);
-static void on_fan_negative_ion_value_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write);
-static void on_elec_lock_value_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write);
+uint8_t uv_lamp_status;
+uint8_t uv_lamp_door_status;
+uint8_t fan_negative_ion_status;
+uint8_t elec_lock_status;
+
+
 
 
 
@@ -4361,28 +4374,20 @@ static void on_disconnect(ble_sls_t * p_sls, ble_evt_t * p_ble_evt)
  
 static void on_write(ble_sls_t * p_sls, ble_evt_t * p_ble_evt)
 {
-    ble_gatts_evt_write_t * p_evt_write = &p_ble_evt->evt.gatts_evt.params.write;
+     ble_gatts_evt_write_t * p_evt_write = &p_ble_evt->evt.gatts_evt.params.write;
 
 
-		   if (p_evt_write->handle == p_sls->fan_negative_ion_handles.value_handle)
+		   if (p_evt_write->handle == p_sls->fan_negative_ion_cmd_handles.value_handle)
     {
-        on_fan_negative_ion_value_write(p_sls, p_evt_write);
+        bsp_cb_on_fan_negative_ion_cmd_write(p_sls, p_evt_write);
     }
-		else if (p_evt_write->handle == p_sls->uv_lamp_handles.cccd_handle)
+		   else if (p_evt_write->handle == p_sls->uv_lamp_cmd_handles.value_handle)
     {
-        on_uv_lamp_cccd_write(p_sls, p_evt_write);
+        bsp_cb_on_uv_lamp_cmd_write(p_sls, p_evt_write);
     }
-		   else if (p_evt_write->handle == p_sls->uv_lamp_handles.value_handle)
+		   else if (p_evt_write->handle == p_sls->elec_lock_cmd_handles.value_handle)
     {
-        on_uv_lamp_value_write(p_sls, p_evt_write);
-    }
-			  else if (p_evt_write->handle == p_sls->uv_lamp_handles.value_handle)
-    {
-        on_uv_lamp_door_value_write(p_sls, p_evt_write);
-    }
-		    else if (p_evt_write->handle == p_sls->elec_lock_handles.value_handle)
-    {
-        on_elec_lock_value_write(p_sls, p_evt_write);
+        bsp_cb_on_elec_lock_cmd_write(p_sls, p_evt_write);
     }
 }
 
@@ -4390,53 +4395,28 @@ static void on_write(ble_sls_t * p_sls, ble_evt_t * p_ble_evt)
 
 
 
- 
-static void on_uv_lamp_cccd_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write)
-{
-    if (p_evt_write->len == 2)
-    {
-        
-        if (p_sls->evt_handler != 0)
-        {
-            ble_sls_evt_t evt;
 
-            if (ble_srv_is_notification_enabled(p_evt_write->data))
-            {
-                evt.evt_type = ble_sls_EVT_NOTIFICATION_ENABLED;
-            }
-            else
-            {
-                evt.evt_type = ble_sls_EVT_NOTIFICATION_DISABLED;
-            }
 
-            p_sls->evt_handler(p_sls, &evt);
-        }
-    }
-}
-static void on_uv_lamp_value_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write)
-{
-	simple_uart_putstring("write uv lamp:");
-	for(uint8_t i=0;i<p_evt_write->len;i++)
-	simple_uart_put(*(p_evt_write->data+i));
-}
-static void on_uv_lamp_door_value_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write)
-{
-		simple_uart_putstring("write uv lamp door:");
-	for(uint8_t i=0;i<p_evt_write->len;i++)
-	simple_uart_put(*(p_evt_write->data+i));
-}
-static void on_fan_negative_ion_value_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write)
-{
-		simple_uart_putstring("write fan:");
-	for(uint8_t i=0;i<p_evt_write->len;i++)
-	simple_uart_put(*(p_evt_write->data+i));
-}
-static void on_elec_lock_value_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write)
-{
-		simple_uart_putstring("write elec lock:");
-	for(uint8_t i=0;i<p_evt_write->len;i++)
-	simple_uart_put(*(p_evt_write->data+i));
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -4446,17 +4426,17 @@ void ble_sls_on_ble_evt(ble_sls_t * p_sls, ble_evt_t * p_ble_evt)
     {
         case BLE_GAP_EVT_CONNECTED:
             on_connect(p_sls, p_ble_evt);
-				    simple_uart_putstring("connected!\r\n");
+				    simple_uart_putstring("\r\nconnected!");
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:
             on_disconnect(p_sls, p_ble_evt);
-				simple_uart_putstring("disconnected!\r\n");
+				simple_uart_putstring("\r\ndisconnected!");
             break;
 
         case BLE_GATTS_EVT_WRITE:
             on_write(p_sls, p_ble_evt);
-				simple_uart_putstring("write!\r\n");
+				simple_uart_putstring("\r\nwrite!");
             break;
 
         default:
@@ -4474,8 +4454,8 @@ void ble_sls_on_ble_evt(ble_sls_t * p_sls, ble_evt_t * p_ble_evt)
 
 
  
-static uint32_t uv_lamp_char_add(ble_sls_t            * p_sls,
-                                                const ble_sls_init_t * p_sls_init)
+static uint32_t uv_lamp_cmd_char_add(ble_sls_t            * p_sls,
+                                     const ble_sls_init_t * p_sls_init)
 {
     ble_gatts_char_md_t char_md;
     ble_gatts_attr_md_t cccd_md;
@@ -4486,8 +4466,8 @@ static uint32_t uv_lamp_char_add(ble_sls_t            * p_sls,
     memset(&cccd_md, 0, sizeof(cccd_md));
 
     do {(&cccd_md . read_perm)->sm = 1; (&cccd_md . read_perm)->lv = 1;} while(0);
-    
 	  do {(&cccd_md . write_perm)->sm = 1; (&cccd_md . write_perm)->lv = 1;} while(0);
+	
     cccd_md.vloc       = 0x01;
 
     memset(&char_md, 0, sizeof(char_md));
@@ -4496,8 +4476,8 @@ static uint32_t uv_lamp_char_add(ble_sls_t            * p_sls,
 	  char_md.char_props.read  = 1;
 	  char_md.char_props.write = 1;
 	  char_md.char_user_desc_max_size=16;
-	  char_md.char_user_desc_size=sizeof("uv_lamp_value");
-	  char_md.p_char_user_desc=(uint8_t*)"uv_lamp_value";
+	  char_md.char_user_desc_size=sizeof("uv_lamp_cmd");
+	  char_md.p_char_user_desc=(uint8_t*)"uv_lamp_cmd";
     char_md.p_char_pf         = 0;
     char_md.p_user_desc_md    = 0;
     char_md.p_cccd_md         = &cccd_md;
@@ -4507,8 +4487,6 @@ static uint32_t uv_lamp_char_add(ble_sls_t            * p_sls,
 
     memset(&attr_md, 0, sizeof(attr_md));
 
-    
-    
 		do {(&attr_md . read_perm)->sm = 1; (&attr_md . read_perm)->lv = 1;} while(0);
 		do {(&attr_md . write_perm)->sm = 1; (&attr_md . write_perm)->lv = 1;} while(0);
     attr_md.vloc       = 0x02;
@@ -4520,33 +4498,44 @@ static uint32_t uv_lamp_char_add(ble_sls_t            * p_sls,
 
     attr_char_value.p_uuid    = &ble_uuid;
     attr_char_value.p_attr_md = &attr_md;
-    attr_char_value.init_len  = ((23) - 1 - 2);
+    attr_char_value.init_len  = 1;
     attr_char_value.init_offs = 0;
-    attr_char_value.max_len   = ((23) - 1 - 2);
-    attr_char_value.p_value   =uv_lamp_cmd;
+    attr_char_value.max_len   = 1;
+    attr_char_value.p_value   =(uint8_t*)&uv_lamp_cmd;
 
     return sd_ble_gatts_characteristic_add(p_sls->service_handle,
                                            &char_md,
                                            &attr_char_value,
-                                           &p_sls->uv_lamp_handles);
+                                           &p_sls->uv_lamp_cmd_handles);
 }
 
-static uint32_t uv_lamp_door_char_add(ble_sls_t * p_sls, const ble_sls_init_t * p_sls_init)
+static uint32_t uv_lamp_status_char_add(ble_sls_t            * p_sls,
+                                        const ble_sls_init_t * p_sls_init)
 {
     ble_gatts_char_md_t char_md;
+    ble_gatts_attr_md_t cccd_md;
     ble_gatts_attr_t    attr_char_value;
     ble_uuid_t          ble_uuid;
     ble_gatts_attr_md_t attr_md;
 
+    memset(&cccd_md, 0, sizeof(cccd_md));
+
+    do {(&cccd_md . read_perm)->sm = 1; (&cccd_md . read_perm)->lv = 1;} while(0);
+	  do {(&cccd_md . write_perm)->sm = 1; (&cccd_md . write_perm)->lv = 1;} while(0);
+    cccd_md.vloc       = 0x01;
+
     memset(&char_md, 0, sizeof(char_md));
+
     char_md.char_props.notify = 1;
-    char_md.char_props.read  = 1;
-	  char_md.char_props.write = 1;
-    char_md.p_char_user_desc = 0;
-    char_md.p_char_pf        = 0;
-    char_md.p_user_desc_md   = 0;
-    char_md.p_cccd_md        = 0;
-    char_md.p_sccd_md        = 0;
+	  char_md.char_props.read  = 1;
+	  
+	  char_md.char_user_desc_max_size=20;
+	  char_md.char_user_desc_size=sizeof("uv_lamp_status");
+	  char_md.p_char_user_desc=(uint8_t*)"uv_lamp_status";
+    char_md.p_char_pf         = 0;
+    char_md.p_user_desc_md    = 0;
+    char_md.p_cccd_md         = &cccd_md;
+    char_md.p_sccd_md         = 0;
 
     do { ble_uuid . type = 0x01; ble_uuid . uuid = 0xFF02;} while(0);
 
@@ -4554,8 +4543,6 @@ static uint32_t uv_lamp_door_char_add(ble_sls_t * p_sls, const ble_sls_init_t * 
 
 		do {(&attr_md . read_perm)->sm = 1; (&attr_md . read_perm)->lv = 1;} while(0);
 		
-    
-    
     attr_md.vloc       = 0x02;
     attr_md.rd_auth    = 0;
     attr_md.wr_auth    = 0;
@@ -4565,48 +4552,49 @@ static uint32_t uv_lamp_door_char_add(ble_sls_t * p_sls, const ble_sls_init_t * 
 
     attr_char_value.p_uuid    = &ble_uuid;
     attr_char_value.p_attr_md = &attr_md;
-    attr_char_value.init_len  = ((23) - 1 - 2);
+    attr_char_value.init_len  = 1;
     attr_char_value.init_offs = 0;
-    attr_char_value.max_len   = ((23) - 1 - 2);
-    attr_char_value.p_value   =uv_lamp_door_cmd;
+    attr_char_value.max_len   = 1;
+    attr_char_value.p_value   =(uint8_t*)&uv_lamp_status;
 
     return sd_ble_gatts_characteristic_add(p_sls->service_handle,
                                            &char_md,
                                            &attr_char_value,
-                                           &p_sls->uv_lamp_door_handles);
+                                           &p_sls->uv_lamp_status_handles);
 }
 
-
-
-
-
-
- 
-static uint32_t fan_negative_ion_char_add(ble_sls_t * p_sls, const ble_sls_init_t * p_sls_init)
+static uint32_t uv_lamp_door_status_char_add(ble_sls_t            * p_sls,
+                                           	 const ble_sls_init_t * p_sls_init)
 {
     ble_gatts_char_md_t char_md;
+	  ble_gatts_attr_md_t cccd_md;
     ble_gatts_attr_t    attr_char_value;
     ble_uuid_t          ble_uuid;
     ble_gatts_attr_md_t attr_md;
 
     memset(&char_md, 0, sizeof(char_md));
-
+    char_md.char_props.notify = 1;
     char_md.char_props.read  = 1;
-	  char_md.char_props.write = 1;
-    char_md.p_char_user_desc = 0;
+	  
+	
+		char_md.char_user_desc_max_size=20;
+	  char_md.char_user_desc_size=sizeof("uv_lamp_door_status");
+	  char_md.p_char_user_desc=(uint8_t*)"uv_lamp_door_status";
     char_md.p_char_pf        = 0;
     char_md.p_user_desc_md   = 0;
     char_md.p_cccd_md        = 0;
     char_md.p_sccd_md        = 0;
 
     do { ble_uuid . type = 0x01; ble_uuid . uuid = 0xFF03;} while(0);
+    
+    memset(&cccd_md, 0, sizeof(cccd_md));
+    do {(&cccd_md . read_perm)->sm = 1; (&cccd_md . read_perm)->lv = 1;} while(0);
+	  do {(&cccd_md . write_perm)->sm = 1; (&cccd_md . write_perm)->lv = 1;} while(0);
+    cccd_md.vloc       = 0x01;
 
     memset(&attr_md, 0, sizeof(attr_md));
-
 		do {(&attr_md . read_perm)->sm = 1; (&attr_md . read_perm)->lv = 1;} while(0);
-		do {(&attr_md . write_perm)->sm = 1; (&attr_md . write_perm)->lv = 1;} while(0);
-    
-    
+	  
     attr_md.vloc       = 0x02;
     attr_md.rd_auth    = 0;
     attr_md.wr_auth    = 0;
@@ -4616,15 +4604,15 @@ static uint32_t fan_negative_ion_char_add(ble_sls_t * p_sls, const ble_sls_init_
 
     attr_char_value.p_uuid    = &ble_uuid;
     attr_char_value.p_attr_md = &attr_md;
-    attr_char_value.init_len  = ((23) - 1 - 2);
+    attr_char_value.init_len  = 1;
     attr_char_value.init_offs = 0;
-    attr_char_value.max_len   = ((23) - 1 - 2);
-    attr_char_value.p_value   =fan_negative_ion_cmd;
+    attr_char_value.max_len   = 1;
+    attr_char_value.p_value   =(uint8_t*)&uv_lamp_door_status;
 
     return sd_ble_gatts_characteristic_add(p_sls->service_handle,
                                            &char_md,
                                            &attr_char_value,
-                                           &p_sls->fan_negative_ion_handles);
+                                           &p_sls->uv_lamp_door_status_handles);
 }
 
 
@@ -4632,33 +4620,40 @@ static uint32_t fan_negative_ion_char_add(ble_sls_t * p_sls, const ble_sls_init_
 
 
 
-
  
-static uint32_t elec_lock_char_add(ble_sls_t * p_sls, const ble_sls_init_t * p_sls_init)
+static uint32_t fan_negative_ion_cmd_char_add(ble_sls_t              * p_sls,
+                                            	const ble_sls_init_t   * p_sls_init)
 {
     ble_gatts_char_md_t char_md;
+		ble_gatts_attr_md_t cccd_md;
     ble_gatts_attr_t    attr_char_value;
     ble_uuid_t          ble_uuid;
     ble_gatts_attr_md_t attr_md;
 
     memset(&char_md, 0, sizeof(char_md));
-
+	
+    char_md.char_props.notify= 1;
     char_md.char_props.read  = 1;
 	  char_md.char_props.write = 1;
-    char_md.p_char_user_desc = 0;
+		char_md.char_user_desc_max_size=20;
+	  char_md.char_user_desc_size=sizeof("fan_ngt_ion_cmd");
+	  char_md.p_char_user_desc=(uint8_t*)"fan_ngt_ion_cmd";
+
     char_md.p_char_pf        = 0;
     char_md.p_user_desc_md   = 0;
     char_md.p_cccd_md        = 0;
     char_md.p_sccd_md        = 0;
 
     do { ble_uuid . type = 0x01; ble_uuid . uuid = 0xFF04;} while(0);
+    
+    memset(&cccd_md, 0, sizeof(cccd_md));
+    do {(&cccd_md . read_perm)->sm = 1; (&cccd_md . read_perm)->lv = 1;} while(0);
+	  do {(&cccd_md . write_perm)->sm = 1; (&cccd_md . write_perm)->lv = 1;} while(0);
+    cccd_md.vloc       = 0x01;
 
     memset(&attr_md, 0, sizeof(attr_md));
-
 		do {(&attr_md . read_perm)->sm = 1; (&attr_md . read_perm)->lv = 1;} while(0);
 		do {(&attr_md . write_perm)->sm = 1; (&attr_md . write_perm)->lv = 1;} while(0);
-    
-    
     attr_md.vloc       = 0x02;
     attr_md.rd_auth    = 0;
     attr_md.wr_auth    = 0;
@@ -4668,15 +4663,176 @@ static uint32_t elec_lock_char_add(ble_sls_t * p_sls, const ble_sls_init_t * p_s
 
     attr_char_value.p_uuid    = &ble_uuid;
     attr_char_value.p_attr_md = &attr_md;
-    attr_char_value.init_len  = 2;
+    attr_char_value.init_len  = 1;
     attr_char_value.init_offs = 0;
-    attr_char_value.max_len   = ((23) - 1 - 2);
-    attr_char_value.p_value   =elec_lock_cmd;
+    attr_char_value.max_len   = 1;
+    attr_char_value.p_value   =(uint8_t*)&fan_negative_ion_cmd;
 
     return sd_ble_gatts_characteristic_add(p_sls->service_handle,
                                            &char_md,
                                            &attr_char_value,
-                                           &p_sls->elec_lock_handles);
+                                           &p_sls->fan_negative_ion_cmd_handles);
+}
+static uint32_t fan_negative_ion_status_char_add(ble_sls_t              * p_sls,
+                                            	   const ble_sls_init_t   * p_sls_init)
+{
+    ble_gatts_char_md_t char_md;
+		ble_gatts_attr_md_t cccd_md;
+    ble_gatts_attr_t    attr_char_value;
+    ble_uuid_t          ble_uuid;
+    ble_gatts_attr_md_t attr_md;
+
+    memset(&char_md, 0, sizeof(char_md));
+	
+    char_md.char_props.notify= 1;
+    char_md.char_props.read  = 1;
+	  
+		char_md.char_user_desc_max_size=20;
+	  char_md.char_user_desc_size=sizeof("fan_ngt_ion_status");
+	  char_md.p_char_user_desc=(uint8_t*)"fan_ngt_ion_status";
+
+    char_md.p_char_pf        = 0;
+    char_md.p_user_desc_md   = 0;
+    char_md.p_cccd_md        = 0;
+    char_md.p_sccd_md        = 0;
+
+    do { ble_uuid . type = 0x01; ble_uuid . uuid = 0xFF05;} while(0);
+    
+    memset(&cccd_md, 0, sizeof(cccd_md));
+    do {(&cccd_md . read_perm)->sm = 1; (&cccd_md . read_perm)->lv = 1;} while(0);
+	  do {(&cccd_md . write_perm)->sm = 1; (&cccd_md . write_perm)->lv = 1;} while(0);
+    cccd_md.vloc       = 0x01;
+
+    memset(&attr_md, 0, sizeof(attr_md));
+		do {(&attr_md . read_perm)->sm = 1; (&attr_md . read_perm)->lv = 1;} while(0);
+		
+    attr_md.vloc       = 0x02;
+    attr_md.rd_auth    = 0;
+    attr_md.wr_auth    = 0;
+    attr_md.vlen       = 1;
+
+    memset(&attr_char_value, 0, sizeof(attr_char_value));
+
+    attr_char_value.p_uuid    = &ble_uuid;
+    attr_char_value.p_attr_md = &attr_md;
+    attr_char_value.init_len  = 1;
+    attr_char_value.init_offs = 0;
+    attr_char_value.max_len   = 1;
+    attr_char_value.p_value   =(uint8_t*)&fan_negative_ion_status;
+
+    return sd_ble_gatts_characteristic_add(p_sls->service_handle,
+                                           &char_md,
+                                           &attr_char_value,
+                                           &p_sls->fan_negative_ion_status_handles);
+}
+
+
+
+
+
+
+ 
+static uint32_t elec_lock_cmd_char_add(ble_sls_t                 * p_sls, 
+	                                     const ble_sls_init_t      * p_sls_init)
+{
+    ble_gatts_char_md_t char_md;
+	  ble_gatts_attr_md_t cccd_md;
+    ble_gatts_attr_t    attr_char_value;
+    ble_uuid_t          ble_uuid;
+    ble_gatts_attr_md_t attr_md;
+
+    memset(&char_md, 0, sizeof(char_md));
+    char_md.char_props.notify= 1;
+    char_md.char_props.read  = 1;
+	  char_md.char_props.write = 1;
+	  char_md.char_user_desc_max_size=20;
+	  char_md.char_user_desc_size=sizeof("fan_ngt_ion_cmd");
+	  char_md.p_char_user_desc=(uint8_t*)"fan_ngt_ion_cmd";
+    char_md.p_char_pf        = 0;
+    char_md.p_user_desc_md   = 0;
+    char_md.p_cccd_md        = 0;
+    char_md.p_sccd_md        = 0;
+
+    do { ble_uuid . type = 0x01; ble_uuid . uuid = 0xFF06;} while(0);
+   
+    memset(&cccd_md, 0, sizeof(cccd_md));
+    do {(&cccd_md . read_perm)->sm = 1; (&cccd_md . read_perm)->lv = 1;} while(0);
+	  do {(&cccd_md . write_perm)->sm = 1; (&cccd_md . write_perm)->lv = 1;} while(0);
+    cccd_md.vloc       = 0x01;
+		
+    memset(&attr_md, 0, sizeof(attr_md));
+		do {(&attr_md . read_perm)->sm = 1; (&attr_md . read_perm)->lv = 1;} while(0);
+		do {(&attr_md . write_perm)->sm = 1; (&attr_md . write_perm)->lv = 1;} while(0);
+
+    attr_md.vloc       = 0x02;
+    attr_md.rd_auth    = 0;
+    attr_md.wr_auth    = 0;
+    attr_md.vlen       = 1;
+
+    memset(&attr_char_value, 0, sizeof(attr_char_value));
+
+    attr_char_value.p_uuid    = &ble_uuid;
+    attr_char_value.p_attr_md = &attr_md;
+    attr_char_value.init_len  = 1;
+    attr_char_value.init_offs = 0;
+    attr_char_value.max_len   = 1;
+    attr_char_value.p_value   = (uint8_t*)&elec_lock_cmd;
+
+    return sd_ble_gatts_characteristic_add(p_sls->service_handle,
+                                           &char_md,
+                                           &attr_char_value,
+                                           &p_sls->elec_lock_cmd_handles);
+}
+static uint32_t elec_lock_status_char_add(ble_sls_t                 * p_sls, 
+	                                        const ble_sls_init_t      * p_sls_init)
+{
+    ble_gatts_char_md_t char_md;
+	  ble_gatts_attr_md_t cccd_md;
+    ble_gatts_attr_t    attr_char_value;
+    ble_uuid_t          ble_uuid;
+    ble_gatts_attr_md_t attr_md;
+
+    memset(&char_md, 0, sizeof(char_md));
+    char_md.char_props.notify= 1;
+    char_md.char_props.read  = 1;
+	  
+	  char_md.char_user_desc_max_size=20;
+	  char_md.char_user_desc_size=sizeof("fan_ngt_ion_status");
+	  char_md.p_char_user_desc=(uint8_t*)"fan_ngt_ion_status";
+    char_md.p_char_pf        = 0;
+    char_md.p_user_desc_md   = 0;
+    char_md.p_cccd_md        = 0;
+    char_md.p_sccd_md        = 0;
+
+    do { ble_uuid . type = 0x01; ble_uuid . uuid = 0xFF07;} while(0);
+   
+    memset(&cccd_md, 0, sizeof(cccd_md));
+    do {(&cccd_md . read_perm)->sm = 1; (&cccd_md . read_perm)->lv = 1;} while(0);
+	  do {(&cccd_md . write_perm)->sm = 1; (&cccd_md . write_perm)->lv = 1;} while(0);
+    cccd_md.vloc       = 0x01;
+		
+    memset(&attr_md, 0, sizeof(attr_md));
+		do {(&attr_md . read_perm)->sm = 1; (&attr_md . read_perm)->lv = 1;} while(0);
+		
+
+    attr_md.vloc       = 0x02;
+    attr_md.rd_auth    = 0;
+    attr_md.wr_auth    = 0;
+    attr_md.vlen       = 1;
+
+    memset(&attr_char_value, 0, sizeof(attr_char_value));
+
+    attr_char_value.p_uuid    = &ble_uuid;
+    attr_char_value.p_attr_md = &attr_md;
+    attr_char_value.init_len  = 1;
+    attr_char_value.init_offs = 0;
+    attr_char_value.max_len   = 1;
+    attr_char_value.p_value   = (uint8_t*)&elec_lock_status;
+
+    return sd_ble_gatts_characteristic_add(p_sls->service_handle,
+                                           &char_md,
+                                           &attr_char_value,
+                                           &p_sls->elec_lock_status_handles);
 }
 
 uint32_t ble_sls_init(ble_sls_t * p_sls, const ble_sls_init_t * p_sls_init)
@@ -4702,29 +4858,43 @@ uint32_t ble_sls_init(ble_sls_t * p_sls, const ble_sls_init_t * p_sls_init)
     }
 
     
-    err_code = uv_lamp_char_add(p_sls, p_sls_init);
+    err_code = uv_lamp_cmd_char_add(p_sls, p_sls_init);
     if (err_code != ((0x0) + 0))
     {
         return err_code;
     }
-    
-    err_code = uv_lamp_door_char_add(p_sls, p_sls_init);
+		    
+    err_code = uv_lamp_status_char_add(p_sls, p_sls_init);
     if (err_code != ((0x0) + 0))
     {
         return err_code;
     }
-    
-       
-      err_code =fan_negative_ion_char_add(p_sls, p_sls_init);
-        if (err_code != ((0x0) + 0))
-        {
-            return err_code;
-        }
-       err_code =elec_lock_char_add(p_sls, p_sls_init);
-        if (err_code != ((0x0) + 0))
-        {
-            return err_code;
-        }
+		    
+    err_code = uv_lamp_door_status_char_add(p_sls, p_sls_init);
+    if (err_code != ((0x0) + 0))
+    {
+        return err_code;
+    }
 
+       err_code =fan_negative_ion_cmd_char_add(p_sls, p_sls_init);
+        if (err_code != ((0x0) + 0))
+        {
+            return err_code;
+        }
+	     err_code =fan_negative_ion_status_char_add(p_sls, p_sls_init);
+        if (err_code != ((0x0) + 0))
+        {
+            return err_code;
+        }
+       err_code =elec_lock_cmd_char_add(p_sls, p_sls_init);
+        if (err_code != ((0x0) + 0))
+        {
+            return err_code;
+        }
+       err_code =elec_lock_status_char_add(p_sls, p_sls_init);
+        if (err_code != ((0x0) + 0))
+        {
+            return err_code;
+        }
     return ((0x0) + 0);
 }

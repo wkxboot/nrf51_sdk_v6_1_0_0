@@ -1,11 +1,17 @@
 #ifndef  __BSP_BTN_SMART_LOCKER_H__
 #define  __BSP_BTN_SMART_LOCKER_H__
 
-#define BUTTON_DETECTION_DELAY                   50  //in ms
-#define SYS_RUN_LED_INTERVAL_IN_MS               1000//in ms
+#if     UART_DEBUG > 0
+#define DEBUG_INFO(X)  simple_uart_putstring(X)
+#else
+#define DEBUG_INFO(X)  
+#endif
 
-#define  UV_LAMP_RUN_SECONDS_PER_TIMES            10 //10s
-#define  FAN_NEGATIVE_ION_RUN_SECONDS_PER_TIMES   10
+
+#define BUTTON_DETECTION_DELAY                   50  //in ms
+#define SYS_RUN_LED_INTERVAL_IN_MS               500//in ms
+
+
 
 #define  LOCK_WAIT_TIMEOUT_MS                      200
 #define  COIN_BOX_WAIT_TIMEOUT_SEC                 8
@@ -52,6 +58,11 @@ bool bsp_board_button_state_get(uint32_t button_pin);
 void bsp_board_buttons_init(void);
 #endif
 
+ void bsp_cb_on_uv_lamp_cmd_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write);
+ void bsp_cb_on_fan_negative_ion_cmd_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write);
+ void bsp_cb_on_elec_lock_cmd_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write);
+
 uint32_t bsp_smart_locker_board_init(uint32_t prescale);
 
+uint8_t *uint8_to_string(uint8_t src);
 #endif

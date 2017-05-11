@@ -98,10 +98,13 @@ typedef struct ble_sls_s
     ble_sls_evt_handler_t        evt_handler;                                  /**< Event handler to be called for handling events in the Heart Rate Service. */
  
     uint16_t                     service_handle;                               /**< Handle of Heart Rate Service (as provided by the BLE stack). */
-    ble_gatts_char_handles_t     uv_lamp_handles;                              /**< Handles related to the Heart Rate Measurement characteristic. */
-		ble_gatts_char_handles_t     uv_lamp_door_handles;                         /**< Handles related to the Heart Rate Control Point characteristic. */
-    ble_gatts_char_handles_t     fan_negative_ion_handles;                     /**< Handles related to the Body Sensor Location characteristic. */
-    ble_gatts_char_handles_t     elec_lock_handles;                            /**< Handles related to the Heart Rate Control Point characteristic. */
+    ble_gatts_char_handles_t     uv_lamp_cmd_handles;                              /**< Handles related to the Heart Rate Measurement characteristic. */
+		ble_gatts_char_handles_t     uv_lamp_status_handles;
+	  ble_gatts_char_handles_t     uv_lamp_door_status_handles;                         /**< Handles related to the Heart Rate Control Point characteristic. */
+    ble_gatts_char_handles_t     fan_negative_ion_cmd_handles;                     /**< Handles related to the Body Sensor Location characteristic. */
+    ble_gatts_char_handles_t     fan_negative_ion_status_handles;
+	  ble_gatts_char_handles_t     elec_lock_cmd_handles;
+  	ble_gatts_char_handles_t     elec_lock_status_handles;                            /**< Handles related to the Heart Rate Control Point characteristic. */
     uint16_t                     conn_handle;                                  /**< Handle of the current connection (as provided by the BLE stack, is BLE_CONN_HANDLE_INVALID if not in a connection). */ 
   
 } ble_sls_t;

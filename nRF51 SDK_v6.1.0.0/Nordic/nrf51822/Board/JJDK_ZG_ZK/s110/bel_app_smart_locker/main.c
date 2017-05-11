@@ -32,7 +32,6 @@
 #include "ble_srv_common.h"
 #include "ble_advdata.h"
 #include "ble_bas.h"
-#include "ble_hrs.h"
 #include "ble_sls.h"
 #include "ble_dis.h"
 #include "ble_conn_params.h"
@@ -40,7 +39,6 @@
 #include "softdevice_handler.h"
 #include "app_timer.h"
 #include "nrf_gpio.h"
-#include "led.h"
 #include "battery.h"
 #include "device_manager.h"
 #include "app_gpiote.h"
@@ -58,9 +56,7 @@
 
 #define IS_SRVC_CHANGED_CHARACT_PRESENT      0                                          /**< Include or not the service_changed characteristic. if not enabled, the server's database cannot be changed for the lifetime of the device*/
                                                                              
-#define HR_INC_BUTTON_PIN_NO                 BUTTON_0                                   /**< Button used to increment heart rate. */
-#define HR_DEC_BUTTON_PIN_NO                 BUTTON_1                                   /**< Button used to decrement heart rate. */
-#define BOND_DELETE_ALL_BUTTON_ID            HR_DEC_BUTTON_PIN_NO                       /**< Button used for deleting all bonded centrals during startup. */
+
 
 #define DEVICE_NAME                          "SMART_LOCKER"                               /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME                    "changhong_jjjg"                      /**< Manufacturer. Will be passed to Device Information Service. */
@@ -72,11 +68,7 @@
 #define APP_TIMER_OP_QUEUE_SIZE              5                                          /**< Size of timer operation queues. */
 
 #define BATTERY_LEVEL_MEAS_INTERVAL          APP_TIMER_TICKS(2000, APP_TIMER_PRESCALER) /**< Battery level measurement interval (ticks). */
-#define NOTIFY_DEV_INFO_INTERVAL             APP_TIMER_TICKS(1000, APP_TIMER_PRESCALER) /**< send device info interval (ticks). */
-#define HEART_RATE_MEAS_INTERVAL             APP_TIMER_TICKS(1000, APP_TIMER_PRESCALER) /**< Heart rate measurement interval (ticks). */
-#define MIN_HEART_RATE                       60                                         /**< Minimum heart rate as returned by the simulated measurement function. */
-#define MAX_HEART_RATE                       300                                        /**< Maximum heart rate as returned by the simulated measurement function. */
-#define HEART_RATE_CHANGE                    2                                          /**< Value by which the heart rate is incremented/decremented during button press. */
+#define NOTIFY_DEV_INFO_INTERVAL             APP_TIMER_TICKS(10000, APP_TIMER_PRESCALER) /**< send device info interval (ticks). */
 
 #define APP_GPIOTE_MAX_USERS                 1                                          /**< Maximum number of users of the GPIOTE handler. */
 
@@ -101,6 +93,10 @@
 
 #define DEAD_BEEF                            0xDEADBEEF                                 /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
 
+ extern uint8_t uv_lamp_cmd;
+ extern uint8_t fan_negative_ion_cmd;
+ extern uint8_t elec_lock_cmd;
+ 
  extern uint8_t uv_lamp_status;
  extern uint8_t fan_negative_ion_status;
  extern uint8_t elec_lock_status;
@@ -109,11 +105,11 @@
 static ble_gap_adv_params_t                  m_adv_params;                              /**< Parameters to be passed to the stack when starting advertising. */
 ble_bas_t                                    bas;                                       /**< Structure used to identify the battery service. */
 static ble_sls_t                             m_sls;
-static ble_hrs_t                             m_hrs;                                     /**< Structure used to identify the heart rate service. */
+//static ble_hrs_t                             m_hrs;                                     /**< Structure used to identify the heart rate service. */
 static volatile uint16_t                     m_cur_heart_rate;                          /**< Current heart rate value. */
                                                                                        
 static app_timer_id_t                        m_battery_timer_id;                        /**< Battery timer. */
-static app_timer_id_t                        m_heart_rate_timer_id;                     /**< Heart rate measurement timer. */
+//static app_timer_id_t                        m_heart_rate_timer_id;                     /**< Heart rate measurement timer. */
 static app_timer_id_t                        m_send_dev_info_timer_id;
 static bool                                  m_memory_access_in_progress = false;       /**< Flag to keep track of ongoing operations on persistent memory. */
 static dm_application_instance_t             m_app_handle;                              /**< Application identifier allocated by device manager */
@@ -200,76 +196,102 @@ static void battery_level_meas_timeout_handler(void * p_context)
 }
 
 
-/**@brief Function for handling the Heart rate measurement timer timeout.
- *
- * @details This function will be called each time the heart rate measurement timer expires.
- *          It will exclude RR Interval data from every third measurement.
- *
- * @param[in]   p_context   Pointer used for passing some arbitrary information (context) from the
- *                          app_start_timer() call to the timeout handler.
- */
-static void heart_rate_meas_timeout_handler(void * p_context)
-{
-    uint32_t err_code;
+///**@brief Function for handling the Heart rate measurement timer timeout.
+// *
+// * @details This function will be called each time the heart rate measurement timer expires.
+// *          It will exclude RR Interval data from every third measurement.
+// *
+// * @param[in]   p_context   Pointer used for passing some arbitrary information (context) from the
+// *                          app_start_timer() call to the timeout handler.
+// */
+//static void heart_rate_meas_timeout_handler(void * p_context)
+//{
+//    uint32_t err_code;
 
-    UNUSED_PARAMETER(p_context);
+//    UNUSED_PARAMETER(p_context);
 
-    err_code = ble_hrs_heart_rate_measurement_send(&m_hrs, m_cur_heart_rate);
+//    err_code = ble_hrs_heart_rate_measurement_send(&m_hrs, m_cur_heart_rate);
 
-    if (
-        (err_code != NRF_SUCCESS)
-        &&
-        (err_code != NRF_ERROR_INVALID_STATE)
-        &&
-        (err_code != BLE_ERROR_NO_TX_BUFFERS)
-        &&
-        (err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
-    )
-    {
-        APP_ERROR_HANDLER(err_code);
-    }
-}
+//    if (
+//        (err_code != NRF_SUCCESS)
+//        &&
+//        (err_code != NRF_ERROR_INVALID_STATE)
+//        &&
+//        (err_code != BLE_ERROR_NO_TX_BUFFERS)
+//        &&
+//        (err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
+//    )
+//    {
+//        APP_ERROR_HANDLER(err_code);
+//    }
+//}
 
 static void app_send_device_info_timeout_handler(void * p_context)
 {
 	uint32_t err_code;
 	UNUSED_PARAMETER(p_context);
-	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->uv_lamp_handles.value_handle,(uint8_t*)&uv_lamp_status,1);
+	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->uv_lamp_cmd_handles.value_handle,&uv_lamp_cmd,1);
 	if(err_code!=NRF_SUCCESS)
 	{
-		simple_uart_putstring("notify failed!_uv_lamp\r\n");
+		DEBUG_INFO("\r\nnotify failed!uv_lamp_cmd!");
 	}
 	else
 	{
-	  simple_uart_putstring("notify successed!_uv_lamp\r\n");	
+	  DEBUG_INFO("\r\nnotify successed!uv_lamp_cmd!");	
 	}
-	
-	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->uv_lamp_door_handles.value_handle,(uint8_t*)&uv_lamp_door_status,1);
+	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->uv_lamp_status_handles.value_handle,&uv_lamp_status,1);
 	if(err_code!=NRF_SUCCESS)
 	{
-		simple_uart_putstring("notify failed!_uv_lamp_door\r\n");
+		DEBUG_INFO("\r\nnotify failed!uv_lamp_status!");
 	}
 	else
 	{
-	  simple_uart_putstring("notify successed!_uv_lamp_door\r\n");	
+	  DEBUG_INFO("\r\nnotify successed!uv_lamp_status!");	
 	}
-	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->fan_negative_ion_handles.value_handle,(uint8_t*)&fan_negative_ion_status,1);
+	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->uv_lamp_door_status_handles.value_handle,(uint8_t*)&uv_lamp_door_status,1);
+	if(err_code!=NRF_SUCCESS)
+	{
+		DEBUG_INFO("\r\nnotify failed!_uv_lamp_door!");
+	}
+	else
+	{
+	  DEBUG_INFO("\r\nnotify successed!_uv_lamp_door!");	
+	}
+	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->fan_negative_ion_cmd_handles.value_handle,(uint8_t*)&fan_negative_ion_cmd,1);
 		if(err_code!=NRF_SUCCESS)
 	{
-		simple_uart_putstring("notify failed!fan\r\n");
+		DEBUG_INFO("\r\nnotify failed!fan_negative_ion_cmd!");
 	}
 	else
 	{
-	  simple_uart_putstring("notify successed!fan\r\n");	
+	  DEBUG_INFO("\r\nnotify successed!fan_negative_ion_cmd!");	
 	}
-	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->elec_lock_handles.value_handle,(uint8_t*)&elec_lock_status,1);
+		err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->fan_negative_ion_status_handles.value_handle,(uint8_t*)&fan_negative_ion_status,1);
 		if(err_code!=NRF_SUCCESS)
 	{
-		simple_uart_putstring("notify failed!lock\r\n");
+		DEBUG_INFO("\r\nnotify failed!fan_negative_ion_status!");
 	}
 	else
 	{
-	  simple_uart_putstring("notify successed!lock\r\n");	
+	  DEBUG_INFO("\r\nnotify successed!fan_negative_ion_status!");	
+	}
+	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->elec_lock_cmd_handles.value_handle,(uint8_t*)&elec_lock_cmd,1);
+		if(err_code!=NRF_SUCCESS)
+	{
+		DEBUG_INFO("\r\nnotify failed!elec_lock_cmd");
+	}
+	else
+	{
+	  DEBUG_INFO("\r\nnotify successed!elec_lock_cmd!");	
+	}
+		err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->elec_lock_status_handles.value_handle,(uint8_t*)&elec_lock_status,1);
+		if(err_code!=NRF_SUCCESS)
+	{
+		DEBUG_INFO("\r\nnotify failed!elec_lock_status");
+	}
+	else
+	{
+	  DEBUG_INFO("\r\nnotify successed!elec_lock_status!");	
 	}
 }
 
@@ -367,10 +389,10 @@ static void timers_init(void)
                                 battery_level_meas_timeout_handler);
     APP_ERROR_CHECK(err_code);
 
-    err_code = app_timer_create(&m_heart_rate_timer_id,
-                                APP_TIMER_MODE_REPEATED,
-                                heart_rate_meas_timeout_handler);
-    APP_ERROR_CHECK(err_code);
+//    err_code = app_timer_create(&m_heart_rate_timer_id,
+//                                APP_TIMER_MODE_REPEATED,
+//                                heart_rate_meas_timeout_handler);
+//    APP_ERROR_CHECK(err_code);
 	
     err_code = app_timer_create(&m_send_dev_info_timer_id,
                                 APP_TIMER_MODE_REPEATED,
@@ -462,10 +484,10 @@ static void services_init(void)
 {
     uint32_t       err_code;
 	  ble_sls_init_t sls_init;
-    ble_hrs_init_t hrs_init;
+    //ble_hrs_init_t hrs_init;
     ble_bas_init_t bas_init;
     ble_dis_init_t dis_init;
-    uint8_t        body_sensor_location;
+    //uint8_t        body_sensor_location;
 
 	    // Initialize smart locker Service.
     memset(&sls_init, 0, sizeof(sls_init));
@@ -485,24 +507,24 @@ static void services_init(void)
     err_code = ble_sls_init(&m_sls, &sls_init);
     APP_ERROR_CHECK(err_code);
 	
-    // Initialize Heart Rate Service.
-    body_sensor_location = BLE_HRS_BODY_SENSOR_LOCATION_FINGER;
+//    // Initialize Heart Rate Service.
+//    body_sensor_location = BLE_HRS_BODY_SENSOR_LOCATION_FINGER;
 
-    memset(&hrs_init, 0, sizeof(hrs_init));
+//    memset(&hrs_init, 0, sizeof(hrs_init));
 
-    hrs_init.is_sensor_contact_supported = false;
-    hrs_init.p_body_sensor_location      = &body_sensor_location;
+//    hrs_init.is_sensor_contact_supported = false;
+//    hrs_init.p_body_sensor_location      = &body_sensor_location;
 
-    // Here the sec level for the Heart Rate Service can be changed/increased.
-    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&hrs_init.hrs_hrm_attr_md.cccd_write_perm);
-    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&hrs_init.hrs_hrm_attr_md.read_perm);
-    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&hrs_init.hrs_hrm_attr_md.write_perm);
+//    // Here the sec level for the Heart Rate Service can be changed/increased.
+//    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&hrs_init.hrs_hrm_attr_md.cccd_write_perm);
+//    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&hrs_init.hrs_hrm_attr_md.read_perm);
+//    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&hrs_init.hrs_hrm_attr_md.write_perm);
 
-    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&hrs_init.hrs_bsl_attr_md.read_perm);
-    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&hrs_init.hrs_bsl_attr_md.write_perm);
+//    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&hrs_init.hrs_bsl_attr_md.read_perm);
+//    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&hrs_init.hrs_bsl_attr_md.write_perm);
 
-    err_code = ble_hrs_init(&m_hrs, &hrs_init);
-    APP_ERROR_CHECK(err_code);
+//    err_code = ble_hrs_init(&m_hrs, &hrs_init);
+//    APP_ERROR_CHECK(err_code);
 
     // Initialize Battery Service.
     memset(&bas_init, 0, sizeof(bas_init));
@@ -550,7 +572,7 @@ static void conn_params_init(void)
     cp_init.first_conn_params_update_delay = FIRST_CONN_PARAMS_UPDATE_DELAY;
     cp_init.next_conn_params_update_delay  = NEXT_CONN_PARAMS_UPDATE_DELAY;
     cp_init.max_conn_params_update_count   = MAX_CONN_PARAMS_UPDATE_COUNT;
-    cp_init.start_on_notify_cccd_handle    = m_hrs.hrm_handles.cccd_handle;
+    cp_init.start_on_notify_cccd_handle    =BLE_GATT_HANDLE_INVALID;// m_hrs.hrm_handles.cccd_handle;
     cp_init.disconnect_on_fail             = true;
     cp_init.evt_handler                    = NULL;
     cp_init.error_handler                  = conn_params_error_handler;
@@ -675,8 +697,8 @@ static void application_timers_start(void)
     err_code = app_timer_start(m_battery_timer_id, BATTERY_LEVEL_MEAS_INTERVAL, NULL);
     APP_ERROR_CHECK(err_code);
 
-    err_code = app_timer_start(m_heart_rate_timer_id, HEART_RATE_MEAS_INTERVAL, NULL);
-    APP_ERROR_CHECK(err_code);
+//    err_code = app_timer_start(m_heart_rate_timer_id, HEART_RATE_MEAS_INTERVAL, NULL);
+//    APP_ERROR_CHECK(err_code);
 	  err_code = app_timer_start(m_send_dev_info_timer_id, NOTIFY_DEV_INFO_INTERVAL, NULL);
     APP_ERROR_CHECK(err_code);
 }
@@ -691,7 +713,7 @@ static void advertising_start(void)
     err_code = sd_ble_gap_adv_start(&m_adv_params);
     APP_ERROR_CHECK(err_code);
 
-    led_start();
+    //led_start();
 }
 
 
@@ -728,23 +750,23 @@ static void system_off_mode_enter(void)
  */
 static void on_ble_evt(ble_evt_t * p_ble_evt)
 {
-    uint32_t        err_code;
+    //uint32_t        err_code;
 
     switch (p_ble_evt->header.evt_id)
     {
         case BLE_GAP_EVT_CONNECTED:
-            led_stop();
+            //led_stop();
             
             // Initialize the current heart rate to the average of max and min values. So that
             // everytime a new connection is made, the heart rate starts from the same value.
-            m_cur_heart_rate = (MAX_HEART_RATE + MIN_HEART_RATE) / 2;
+            //m_cur_heart_rate = (MAX_HEART_RATE + MIN_HEART_RATE) / 2;
 
             // Start timers used to generate battery and HR measurements.
             application_timers_start();
 
             // Start handling button presses
-            err_code = app_button_enable();
-            APP_ERROR_CHECK(err_code);
+            //err_code = app_button_enable();
+            //APP_ERROR_CHECK(err_code);
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:            
@@ -816,7 +838,7 @@ static void on_sys_evt(uint32_t sys_evt)
 static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
 {
     dm_ble_evt_handler(p_ble_evt);
-    ble_hrs_on_ble_evt(&m_hrs, p_ble_evt);
+    //ble_hrs_on_ble_evt(&m_hrs, p_ble_evt);
     ble_bas_on_ble_evt(&bas, p_ble_evt);
 	  ble_sls_on_ble_evt(&m_sls,p_ble_evt);
     ble_conn_params_on_ble_evt(p_ble_evt);
@@ -848,7 +870,7 @@ int main(void)
 {
     uint32_t err_code;
     simple_uart_config(RX_PIN_NUMBER,TX_PIN_NUMBER,0,0,HWFC);
-	  simple_uart_putstring("hello world!\r\n");
+	  DEBUG_INFO("hello smart_locker!\r\n");
     timers_init();
     gpiote_init();
     bsp_smart_locker_board_init(APP_TIMER_PRESCALER);//buttons_init();

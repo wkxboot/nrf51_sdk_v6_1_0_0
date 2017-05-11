@@ -9754,7 +9754,7 @@ void simple_uart_config(uint8_t rts_pin_number,
         ((NRF_UART_Type *) 0x40002000UL)->CONFIG  = ((1UL) << (0UL));
     }
 
-    ((NRF_UART_Type *) 0x40002000UL)->BAUDRATE      = ((0x009D5000UL) << (0UL));
+    ((NRF_UART_Type *) 0x40002000UL)->BAUDRATE      = ((0x01D7E000UL) << (0UL));
     ((NRF_UART_Type *) 0x40002000UL)->ENABLE        = ((0x04UL) << (0UL));
     ((NRF_UART_Type *) 0x40002000UL)->TASKS_STARTTX = 1;
     ((NRF_UART_Type *) 0x40002000UL)->TASKS_STARTRX = 1;
