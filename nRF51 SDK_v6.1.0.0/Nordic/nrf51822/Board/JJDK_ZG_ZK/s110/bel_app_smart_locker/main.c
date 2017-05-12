@@ -230,6 +230,28 @@ static void app_send_device_info_timeout_handler(void * p_context)
 {
 	uint32_t err_code;
 	UNUSED_PARAMETER(p_context);
+	
+	DEBUG_INFO("\r\nuv_lamp_cmd->");
+	DEBUG_INFO(uint8_to_string(uv_lamp_cmd));
+	
+	DEBUG_INFO("\r\nuv_lamp_status->");
+	DEBUG_INFO(uint8_to_string(uv_lamp_status));
+	
+	DEBUG_INFO("\r\nuv_lamp_door_status->");
+	DEBUG_INFO(uint8_to_string(uv_lamp_door_status));
+	
+	DEBUG_INFO("\r\nfan_negative_ion_cmd->");
+	DEBUG_INFO(uint8_to_string(fan_negative_ion_cmd));
+	
+	DEBUG_INFO("\r\nfan_negative_ion_status->");
+	DEBUG_INFO(uint8_to_string(fan_negative_ion_status));
+	
+	DEBUG_INFO("\r\nelec_lock_cmd->");
+	DEBUG_INFO(uint8_to_string(elec_lock_cmd));
+	
+	DEBUG_INFO("\r\nelec_lock_status->");
+	DEBUG_INFO(uint8_to_string(elec_lock_status));
+		
 	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->uv_lamp_cmd_handles.value_handle,&uv_lamp_cmd,1);
 	if(err_code!=NRF_SUCCESS)
 	{
@@ -251,11 +273,11 @@ static void app_send_device_info_timeout_handler(void * p_context)
 	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->uv_lamp_door_status_handles.value_handle,(uint8_t*)&uv_lamp_door_status,1);
 	if(err_code!=NRF_SUCCESS)
 	{
-		DEBUG_INFO("\r\nnotify failed!_uv_lamp_door!");
+		DEBUG_INFO("\r\nnotify failed!uv_lamp_door!");
 	}
 	else
 	{
-	  DEBUG_INFO("\r\nnotify successed!_uv_lamp_door!");	
+	  DEBUG_INFO("\r\nnotify successed!uv_lamp_door!");	
 	}
 	err_code=ble_sls_notify_device_info(&m_sls,(&m_sls)->fan_negative_ion_cmd_handles.value_handle,(uint8_t*)&fan_negative_ion_cmd,1);
 		if(err_code!=NRF_SUCCESS)

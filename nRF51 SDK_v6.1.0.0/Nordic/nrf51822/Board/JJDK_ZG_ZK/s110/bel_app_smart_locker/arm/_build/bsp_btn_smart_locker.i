@@ -14854,8 +14854,8 @@ app_timer_id_t sys_run_led_timer_id;
  extern uint8_t elec_lock_status;
 
 
- uint8_t uv_lamp_control_cmd=2;
- uint8_t elec_lock_control_cmd=2;
+
+
 
 static uint32_t smart_locker_local_prescal=0;
 static void bsp_sls_env_value_init(void);
@@ -15008,18 +15008,16 @@ _Bool bsp_board_button_state_get(uint32_t button_pin)
 
 void bsp_board_buttons_init(void)
 {
-   
     
     
     static app_button_cfg_t buttons[] =
     {
-        {2, 0, NRF_GPIO_PIN_PULLUP, bsp_button_event_handler},
         {2, 0, NRF_GPIO_PIN_PULLUP, bsp_button_event_handler}, 
         {3, 0, NRF_GPIO_PIN_PULLUP, bsp_button_event_handler},
 			  {4, 0, NRF_GPIO_PIN_PULLUP, bsp_button_event_handler},
 		};
     
-    do { uint32_t ERR_CODE = app_button_init((buttons), (sizeof(buttons) / sizeof(buttons[0])), (((uint32_t)((((50) * (uint64_t)32768) + ((((smart_locker_local_prescal) + 1) * 1000) / 2)) / (((smart_locker_local_prescal) + 1) * 1000)))), (0) ? app_button_evt_schedule : 0); do { const uint32_t LOCAL_ERR_CODE = (ERR_CODE); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 200, (uint8_t*) "..\\bsp_btn_smart_locker.c"); } while (0); } } while (0); } while (0); 
+    do { uint32_t ERR_CODE = app_button_init((buttons), (sizeof(buttons) / sizeof(buttons[0])), (((uint32_t)((((50) * (uint64_t)32768) + ((((smart_locker_local_prescal) + 1) * 1000) / 2)) / (((smart_locker_local_prescal) + 1) * 1000)))), (0) ? app_button_evt_schedule : 0); do { const uint32_t LOCAL_ERR_CODE = (ERR_CODE); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 198, (uint8_t*) "..\\bsp_btn_smart_locker.c"); } while (0); } } while (0); } while (0); 
 }
 
 
@@ -15066,7 +15064,7 @@ uint32_t bsp_smart_locker_board_init(uint32_t prescale)
 	 bsp_sls_env_value_init();
 	 err_code = app_button_enable();
 	
-	 do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 247, (uint8_t*) "..\\bsp_btn_smart_locker.c"); } while (0); } } while (0);
+	 do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 245, (uint8_t*) "..\\bsp_btn_smart_locker.c"); } while (0); } } while (0);
    err_code=app_timer_create(&lock_wait_timer_id,APP_TIMER_MODE_SINGLE_SHOT,bsp_open_elec_lock_wait_timeout_handler);
    do { if (((err_code) != ((0x0) + 0)) && ((err_code) != ((0x0) + 7))) { return err_code; } } while (0);
    err_code=app_timer_create(&sys_run_led_timer_id,APP_TIMER_MODE_REPEATED,bsp_sys_run_led_timeout_handler);
@@ -15083,20 +15081,21 @@ static void bsp_button_event_handler(uint8_t pin_no, uint8_t button_action)
          switch (pin_no)
         {
 			    case 2 :
-            elec_lock_status=1;
-            simple_uart_putstring("\r\nelec lock is locked!");
+          elec_lock_status=1;
+          simple_uart_putstring("\r\nelec lock is locked!");
           break;					
 					case 3:
-					  uv_lamp_door_status=1;
-				   if(uv_lamp_control_cmd==1)
-				    bsp_open_uv_lamp_and_indicator_led();
-            simple_uart_putstring("\r\nlock door is closed!");
+					uv_lamp_door_status=1;
+				  if(uv_lamp_cmd==1)
+				  bsp_open_uv_lamp_and_indicator_led();
+          simple_uart_putstring("\r\nuv_lamp door is closed!");
 					break;
 					case 4 :
-						  simple_uart_putstring("\r\ncoin box get low!");
+					simple_uart_putstring("\r\ncoin box get low!");
           break;						
           default:
-          do { app_error_handler((pin_no), 277, (uint8_t*) "..\\bsp_btn_smart_locker.c"); } while (0);
+          do { app_error_handler((pin_no), 275, (uint8_t*) "..\\bsp_btn_smart_locker.c"); } while (0);
+					simple_uart_putstring("\r\nbutton_action_push err pin no!");
           break;
 				}
 	}
@@ -15105,20 +15104,21 @@ static void bsp_button_event_handler(uint8_t pin_no, uint8_t button_action)
         switch (pin_no)
         {
 			    case 2 :
-            elec_lock_status=2;
-            simple_uart_putstring("\r\nelec lock is opened!");
+          elec_lock_status=2;
+          simple_uart_putstring("\r\nelec lock is opened!");
           break;					
 					case 3:
-					  uv_lamp_door_status=2;
-				   if(uv_lamp_control_cmd==1)
-				    bsp_open_uv_lamp_and_indicator_led();
-            simple_uart_putstring("\r\nlock door is open!");
+				  uv_lamp_door_status=2;
+				  if(uv_lamp_status==1)
+				  bsp_close_uv_lamp_and_indicator_led();
+          simple_uart_putstring("\r\nuv_lamp door is opened!");
 					break;
 					case 4 :
-						  simple_uart_putstring("\r\ncoin box get high!");
+					simple_uart_putstring("\r\ncoin box get high!");
           break;						
           default:
-          do { app_error_handler((pin_no), 299, (uint8_t*) "..\\bsp_btn_smart_locker.c"); } while (0);
+          do { app_error_handler((pin_no), 298, (uint8_t*) "..\\bsp_btn_smart_locker.c"); } while (0);
+					simple_uart_putstring("\r\nbutton_action_release err pin no!");
           break;
 				}
 		}
@@ -15141,8 +15141,7 @@ void bsp_btn_smart_locker_evt_handler_callback()
 	simple_uart_putstring(uint8_to_string(uv_lamp_cmd));
 	
 	if(uv_lamp_cmd==1)
-	{
-		
+	{		
 	bsp_open_uv_lamp_and_indicator_led();	
   simple_uart_putstring("\r\nopen uv_lamp!");
 		
@@ -15158,9 +15157,12 @@ void bsp_btn_smart_locker_evt_handler_callback()
 	}
 }
 
+
+
+
  void bsp_cb_on_fan_negative_ion_cmd_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write)
 {
-	simple_uart_putstring("write fan cmd:");
+	simple_uart_putstring("\r\nwrite fan cmd->");
 	simple_uart_putstring("len:");
 	simple_uart_putstring(uint8_to_string(p_evt_write ->len));
   simple_uart_putstring("cmd:");
@@ -15175,7 +15177,7 @@ void bsp_btn_smart_locker_evt_handler_callback()
   simple_uart_putstring("\r\nopen fan_ngt_ion!");
 		
 	}
-	else if(uv_lamp_cmd==2)
+	else if(fan_negative_ion_cmd==2)
 	{
 	  bsp_close_fan_negative_ion_and_indicator_led();
     simple_uart_putstring("\r\nclose fan_ngt_ion!");		
@@ -15185,9 +15187,10 @@ void bsp_btn_smart_locker_evt_handler_callback()
 		simple_uart_putstring("\r\nfan_ngt_ion cmd err!");
 	}
 }
+
  void bsp_cb_on_elec_lock_cmd_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write)
 {
-  simple_uart_putstring("write elec_lock cmd:");
+  simple_uart_putstring("\r\nwrite elec_lock cmd->");
 	simple_uart_putstring("len:");
 	simple_uart_putstring(uint8_to_string(p_evt_write ->len));
   simple_uart_putstring("cmd:");
@@ -15196,11 +15199,9 @@ void bsp_btn_smart_locker_evt_handler_callback()
 	simple_uart_putstring(uint8_to_string(elec_lock_cmd));
 	
 	if(elec_lock_cmd==1)
-	{
-		
+	{	
 	 bsp_open_elec_lock();	
-   simple_uart_putstring("\r\nopen elec_lock!");
-		
+   simple_uart_putstring("\r\nopen elec_lock!");	
 	}
 	else
 	{
@@ -15216,38 +15217,52 @@ static void bsp_open_uv_lamp_and_indicator_led(void)
    bsp_board_led_on(8);   
    uv_lamp_status=1;
 }
+
 static void bsp_close_uv_lamp_and_indicator_led(void)
 {
    bsp_board_switch_off(6);
    bsp_board_led_off(8); 
    uv_lamp_status=2;
 }
+
+
 static void bsp_open_fan_negative_ion_and_indicator_led(void)
 {
    bsp_board_switch_on(7);
    bsp_board_led_on(7);
    fan_negative_ion_status=1;
 }
+
 static void bsp_close_fan_negative_ion_and_indicator_led(void)
 {
    bsp_board_switch_off(7);
    bsp_board_led_off(7);
    fan_negative_ion_status=2;
 }
+
+
 static void bsp_open_elec_lock(void)
 {
 	static uint8_t open_try_times=3;
+	simple_uart_putstring("\r\ncur open time_remain->");
+	simple_uart_putstring(uint8_to_string(open_try_times));
   if(elec_lock_status==1 && open_try_times>0)
-  {
+  {	
 	 open_try_times--;
    bsp_board_switch_on(11);
    app_timer_start(lock_wait_timer_id,((uint32_t)((((200) * (uint64_t)32768) + ((((smart_locker_local_prescal) + 1) * 1000) / 2)) / (((smart_locker_local_prescal) + 1) * 1000))),0);
+	 simple_uart_putstring("\r\nopen elec_lock try again!");
 	}
 	else
 	{
 		open_try_times=3;
+		if(elec_lock_status==2)
+			simple_uart_putstring("\r\nopen elec_lock successed!");
+		else
+			simple_uart_putstring("\r\nopen elec_lock failed!");;
 	}
 }
+
 static void bsp_open_elec_lock_wait_timeout_handler(void * p_context)
 {
 	 ((void)(p_context));
@@ -15255,8 +15270,10 @@ static void bsp_open_elec_lock_wait_timeout_handler(void * p_context)
 	 bsp_open_elec_lock();
 }
 
+
 static void bsp_sys_run_led_timeout_handler(void * p_context)
 {
+	((void)(p_context));
 	bsp_board_led_invert(12);
 }
 

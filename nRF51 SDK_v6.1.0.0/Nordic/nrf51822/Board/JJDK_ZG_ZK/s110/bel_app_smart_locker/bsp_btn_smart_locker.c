@@ -24,8 +24,8 @@ app_timer_id_t sys_run_led_timer_id;//系统运行灯
  extern uint8_t elec_lock_status;
 
 
- uint8_t uv_lamp_control_cmd=CONTROL_CMD_STOP;
- uint8_t elec_lock_control_cmd=CONTROL_CMD_STOP;
+// uint8_t uv_lamp_control_cmd=CONTROL_CMD_STOP;
+// uint8_t elec_lock_control_cmd=CONTROL_CMD_STOP;
 
 static uint32_t smart_locker_local_prescal=0;
 static void bsp_sls_env_value_init(void);
@@ -186,13 +186,11 @@ bool bsp_board_button_state_get(uint32_t button_pin)
 
 void bsp_board_buttons_init(void)
 {
-   // Configure HR_INC_BUTTON_PIN_NO and HR_DEC_BUTTON_PIN_NO as wake up buttons and also configure
     // for 'pull up' because the eval board does not have external pull up resistors connected to
     // the buttons.
     static app_button_cfg_t buttons[] =
     {
-        {BUTTON_ELEC_LOCK_PIN_NO, BUTTONS_ACTIVE_STATE, BUTTON_PULL, bsp_button_event_handler},
-        {BUTTON_ELEC_LOCK_PIN_NO, BUTTONS_ACTIVE_STATE, BUTTON_PULL, bsp_button_event_handler}, // Note: This pin is also BONDMNGR_DELETE_BUTTON_PIN_NO
+        {BUTTON_ELEC_LOCK_PIN_NO, BUTTONS_ACTIVE_STATE, BUTTON_PULL, bsp_button_event_handler}, 
         {BUTTON_UV_LAMP_DOOR_PIN_NO, BUTTONS_ACTIVE_STATE, BUTTON_PULL, bsp_button_event_handler},
 			  {BUTTON_COIN_BOX_PIN_NO, BUTTONS_ACTIVE_STATE, BUTTON_PULL, bsp_button_event_handler},
 		};
@@ -261,20 +259,21 @@ static void bsp_button_event_handler(uint8_t pin_no, uint8_t button_action)
          switch (pin_no)
         {
 			    case BUTTON_ELEC_LOCK_PIN_NO :
-            elec_lock_status=DEVICE_STATUS_RUN;
-            DEBUG_INFO("\r\nelec lock is locked!");
+          elec_lock_status=DEVICE_STATUS_RUN;
+          DEBUG_INFO("\r\nelec lock is locked!");
           break;					
 					case BUTTON_UV_LAMP_DOOR_PIN_NO:
-					  uv_lamp_door_status=DEVICE_STATUS_RUN;
-				   if(uv_lamp_control_cmd==CONTROL_CMD_RUN)
-				    bsp_open_uv_lamp_and_indicator_led();
-            DEBUG_INFO("\r\nlock door is closed!");
+					uv_lamp_door_status=DEVICE_STATUS_RUN;
+				  if(uv_lamp_cmd==CONTROL_CMD_RUN)//如果当前紫外灯的命令仍是运行，就打开它
+				  bsp_open_uv_lamp_and_indicator_led();
+          DEBUG_INFO("\r\nuv_lamp door is closed!");
 					break;
 					case BUTTON_COIN_BOX_PIN_NO :
-						  DEBUG_INFO("\r\ncoin box get low!");
+					DEBUG_INFO("\r\ncoin box get low!");
           break;						
           default:
           APP_ERROR_HANDLER(pin_no);
+					DEBUG_INFO("\r\nbutton_action_push err pin no!");
           break;
 				}
 	}
@@ -283,20 +282,21 @@ static void bsp_button_event_handler(uint8_t pin_no, uint8_t button_action)
         switch (pin_no)
         {
 			    case BUTTON_ELEC_LOCK_PIN_NO :
-            elec_lock_status=DEVICE_STATUS_STOP;
-            DEBUG_INFO("\r\nelec lock is opened!");
+          elec_lock_status=DEVICE_STATUS_STOP;
+          DEBUG_INFO("\r\nelec lock is opened!");
           break;					
 					case BUTTON_UV_LAMP_DOOR_PIN_NO:
-					  uv_lamp_door_status=DEVICE_STATUS_STOP;
-				   if(uv_lamp_control_cmd==CONTROL_CMD_RUN)
-				    bsp_open_uv_lamp_and_indicator_led();
-            DEBUG_INFO("\r\nlock door is open!");
+				  uv_lamp_door_status=DEVICE_STATUS_STOP;
+				  if(uv_lamp_status==DEVICE_STATUS_RUN)//如果紫外灯还在运行，就关闭它
+				  bsp_close_uv_lamp_and_indicator_led();
+          DEBUG_INFO("\r\nuv_lamp door is opened!");
 					break;
 					case BUTTON_COIN_BOX_PIN_NO :
-						  DEBUG_INFO("\r\ncoin box get high!");
+					DEBUG_INFO("\r\ncoin box get high!");
           break;						
           default:
           APP_ERROR_HANDLER(pin_no);
+					DEBUG_INFO("\r\nbutton_action_release err pin no!");
           break;
 				}
 		}
@@ -307,7 +307,7 @@ void bsp_btn_smart_locker_evt_handler_callback()//智能储物柜的事件处理
 	
 }     
 
-
+//ble smart locker service 收到写特征uv_lamp_cmd数据时回调函数
  void bsp_cb_on_uv_lamp_cmd_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write)
 {
 	DEBUG_INFO("\r\nwrite uv_lamp cmd->");
@@ -319,8 +319,7 @@ void bsp_btn_smart_locker_evt_handler_callback()//智能储物柜的事件处理
 	DEBUG_INFO(uint8_to_string(uv_lamp_cmd));
 	
 	if(uv_lamp_cmd==CONTROL_CMD_RUN)
-	{
-		
+	{		
 	bsp_open_uv_lamp_and_indicator_led();	
   DEBUG_INFO("\r\nopen uv_lamp!");
 		
@@ -336,9 +335,12 @@ void bsp_btn_smart_locker_evt_handler_callback()//智能储物柜的事件处理
 	}
 }
 
+
+
+//ble smart locker service 收到写特征fan_negative_ion_cmd数据时回调函数
  void bsp_cb_on_fan_negative_ion_cmd_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write)
 {
-	DEBUG_INFO("write fan cmd:");
+	DEBUG_INFO("\r\nwrite fan cmd->");
 	DEBUG_INFO("len:");
 	DEBUG_INFO(uint8_to_string(p_evt_write->len));
   DEBUG_INFO("cmd:");
@@ -353,7 +355,7 @@ void bsp_btn_smart_locker_evt_handler_callback()//智能储物柜的事件处理
   DEBUG_INFO("\r\nopen fan_ngt_ion!");
 		
 	}
-	else if(uv_lamp_cmd==CONTROL_CMD_STOP)
+	else if(fan_negative_ion_cmd==CONTROL_CMD_STOP)
 	{
 	  bsp_close_fan_negative_ion_and_indicator_led();
     DEBUG_INFO("\r\nclose fan_ngt_ion!");		
@@ -363,9 +365,10 @@ void bsp_btn_smart_locker_evt_handler_callback()//智能储物柜的事件处理
 		DEBUG_INFO("\r\nfan_ngt_ion cmd err!");
 	}
 }
+//ble smart locker service 收到写特征elec_lock_cmd数据时回调函数
  void bsp_cb_on_elec_lock_cmd_write(ble_sls_t * p_sls, ble_gatts_evt_write_t * p_evt_write)
 {
-  DEBUG_INFO("write elec_lock cmd:");
+  DEBUG_INFO("\r\nwrite elec_lock cmd->");
 	DEBUG_INFO("len:");
 	DEBUG_INFO(uint8_to_string(p_evt_write->len));
   DEBUG_INFO("cmd:");
@@ -374,11 +377,9 @@ void bsp_btn_smart_locker_evt_handler_callback()//智能储物柜的事件处理
 	DEBUG_INFO(uint8_to_string(elec_lock_cmd));
 	
 	if(elec_lock_cmd==CONTROL_CMD_RUN)
-	{
-		
+	{	
 	 bsp_open_elec_lock();	
-   DEBUG_INFO("\r\nopen elec_lock!");
-		
+   DEBUG_INFO("\r\nopen elec_lock!");	
 	}
 	else
 	{
@@ -387,45 +388,59 @@ void bsp_btn_smart_locker_evt_handler_callback()//智能储物柜的事件处理
 		  
 }
 
-
+//打开紫外灯和指示灯
 static void bsp_open_uv_lamp_and_indicator_led(void)
 {
    bsp_board_switch_on(SWITCH_UV_LAMP_PIN_NO);
    bsp_board_led_on(LED_UV_LAMP_PIN_NO);   
    uv_lamp_status=DEVICE_STATUS_RUN;
 }
+//关闭紫外灯和指示灯
 static void bsp_close_uv_lamp_and_indicator_led(void)
 {
    bsp_board_switch_off(SWITCH_UV_LAMP_PIN_NO);
    bsp_board_led_off(LED_UV_LAMP_PIN_NO); 
    uv_lamp_status=DEVICE_STATUS_STOP;
 }
+
+//打开风扇和负氧离子器和指示灯
 static void bsp_open_fan_negative_ion_and_indicator_led(void)
 {
    bsp_board_switch_on(SWITCH_FAN_NEGATIVE_ION_PIN_NO);
    bsp_board_led_on(LED_NEGATIVE_ION_PIN_NO);
    fan_negative_ion_status=DEVICE_STATUS_RUN;
 }
+//关闭风扇和负氧离子器和指示灯
 static void bsp_close_fan_negative_ion_and_indicator_led(void)
 {
    bsp_board_switch_off(SWITCH_FAN_NEGATIVE_ION_PIN_NO);
    bsp_board_led_off(LED_NEGATIVE_ION_PIN_NO);
    fan_negative_ion_status=DEVICE_STATUS_STOP;
 }
+
+//打开电磁锁
 static void bsp_open_elec_lock(void)
 {
 	static uint8_t open_try_times=DEFAULT_OPEN_LOCK_TRY_TIMES;
+	DEBUG_INFO("\r\ncur open time_remain->");
+	DEBUG_INFO(uint8_to_string(open_try_times));
   if(elec_lock_status==DEVICE_STATUS_RUN && open_try_times>0)
-  {
+  {	
 	 open_try_times--;
    bsp_board_switch_on(SWITCH_ELEC_LOCK_PIN_NO);
    app_timer_start(lock_wait_timer_id,APP_TIMER_TICKS(LOCK_WAIT_TIMEOUT_MS,smart_locker_local_prescal),NULL);
+	 DEBUG_INFO("\r\nopen elec_lock try again!");
 	}
 	else
 	{
 		open_try_times=DEFAULT_OPEN_LOCK_TRY_TIMES;
+		if(elec_lock_status==DEVICE_STATUS_STOP)
+			DEBUG_INFO("\r\nopen elec_lock successed!");
+		else
+			DEBUG_INFO("\r\nopen elec_lock failed!");;
 	}
 }
+//打开电磁锁脉冲延时处理
 static void bsp_open_elec_lock_wait_timeout_handler(void * p_context)
 {
 	 UNUSED_PARAMETER(p_context);
@@ -433,12 +448,14 @@ static void bsp_open_elec_lock_wait_timeout_handler(void * p_context)
 	 bsp_open_elec_lock();//再次尝试开锁
 }
 
+//系统运行指示灯 每秒闪烁一次
 static void bsp_sys_run_led_timeout_handler(void * p_context)
 {
+	UNUSED_PARAMETER(p_context);
 	bsp_board_led_invert(LED_SYS_RUN_PIN_NO);
 }
 
-/******uint8 --->0x string***/
+/******8位整形数据转换成字符串***/
 uint8_t *uint8_to_string(uint8_t src)
 {
 #if UART_DEBUG > 0
@@ -470,7 +487,7 @@ uint8_t *uint8_to_string(uint8_t src)
  return str;
 #else
   (void)src;
-  return (char*)0;
+  return (uint8_t*)0;
 #endif
 }
 

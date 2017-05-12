@@ -14499,33 +14499,9 @@ static __inline uint32_t softdevice_evt_schedule(void)
 
 #line 18 "..\\..\\..\\..\\..\\Include\\nrf_assert.h"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
+#line 55 "..\\..\\..\\..\\..\\Include\\nrf_assert.h"
 void assert_nrf_callback(uint16_t line_num, const uint8_t *file_name);
 
-    
-    
-
-
-
- 
-#line 57 "..\\..\\..\\..\\..\\Include\\nrf_assert.h"
 
 #line 19 "..\\..\\..\\..\\..\\Source\\sd_common\\softdevice_handler.c"
 #line 20 "..\\..\\..\\..\\..\\Source\\sd_common\\softdevice_handler.c"

@@ -4322,10 +4322,7 @@ uint8_t *uint8_to_string(uint8_t src);
 
 
 
-
-
-
-#line 41 "..\\..\\..\\..\\..\\Source\\ble\\ble_services\\ble_sls.c"
+#line 38 "..\\..\\..\\..\\..\\Source\\ble\\ble_services\\ble_sls.c"
 
 
 
@@ -4375,7 +4372,6 @@ static void on_disconnect(ble_sls_t * p_sls, ble_evt_t * p_ble_evt)
 static void on_write(ble_sls_t * p_sls, ble_evt_t * p_ble_evt)
 {
      ble_gatts_evt_write_t * p_evt_write = &p_ble_evt->evt.gatts_evt.params.write;
-
 
 		   if (p_evt_write->handle == p_sls->fan_negative_ion_cmd_handles.value_handle)
     {
@@ -4431,12 +4427,12 @@ void ble_sls_on_ble_evt(ble_sls_t * p_sls, ble_evt_t * p_ble_evt)
 
         case BLE_GAP_EVT_DISCONNECTED:
             on_disconnect(p_sls, p_ble_evt);
-				simple_uart_putstring("\r\ndisconnected!");
+				    simple_uart_putstring("\r\ndisconnected!");
             break;
 
         case BLE_GATTS_EVT_WRITE:
             on_write(p_sls, p_ble_evt);
-				simple_uart_putstring("\r\nwrite!");
+				    simple_uart_putstring("\r\nwrited!");
             break;
 
         default:
@@ -4746,8 +4742,8 @@ static uint32_t elec_lock_cmd_char_add(ble_sls_t                 * p_sls,
     char_md.char_props.read  = 1;
 	  char_md.char_props.write = 1;
 	  char_md.char_user_desc_max_size=20;
-	  char_md.char_user_desc_size=sizeof("fan_ngt_ion_cmd");
-	  char_md.p_char_user_desc=(uint8_t*)"fan_ngt_ion_cmd";
+	  char_md.char_user_desc_size=sizeof("elec_lock_cmd");
+	  char_md.p_char_user_desc=(uint8_t*)"elec_lock_cmd";
     char_md.p_char_pf        = 0;
     char_md.p_user_desc_md   = 0;
     char_md.p_cccd_md        = 0;
@@ -4797,8 +4793,8 @@ static uint32_t elec_lock_status_char_add(ble_sls_t                 * p_sls,
     char_md.char_props.read  = 1;
 	  
 	  char_md.char_user_desc_max_size=20;
-	  char_md.char_user_desc_size=sizeof("fan_ngt_ion_status");
-	  char_md.p_char_user_desc=(uint8_t*)"fan_ngt_ion_status";
+	  char_md.char_user_desc_size=sizeof("elec_lock_status");
+	  char_md.p_char_user_desc=(uint8_t*)"elec_lock_status";
     char_md.p_char_pf        = 0;
     char_md.p_user_desc_md   = 0;
     char_md.p_cccd_md        = 0;

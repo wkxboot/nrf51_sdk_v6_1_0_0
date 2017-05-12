@@ -1891,33 +1891,9 @@ extern __declspec(__nothrow) void _membitmovewb(void *  , const void *  , int  ,
 
 #line 18 "..\\..\\..\\..\\..\\Include\\nrf_assert.h"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
+#line 55 "..\\..\\..\\..\\..\\Include\\nrf_assert.h"
 void assert_nrf_callback(uint16_t line_num, const uint8_t *file_name);
 
-    
-    
-
-
-
- 
-#line 57 "..\\..\\..\\..\\..\\Include\\nrf_assert.h"
 
 #line 20 "..\\..\\..\\..\\..\\Source\\app_common\\pstorage.c"
 #line 1 "..\\..\\..\\..\\..\\Include\\nrf.h"

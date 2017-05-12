@@ -25,9 +25,6 @@
 #include "bsp_btn_smart_locker.h"
 
 
-
-#define OPCODE_LENGTH 1     /**< Length of opcode inside Heart Rate Measurement packet. */
-#define HANDLE_LENGTH 2     /**< Length of handle inside Heart Rate Measurement packet. */
 #define MAX_SLS_LEN        (BLE_L2CAP_MTU_DEF - OPCODE_LENGTH - HANDLE_LENGTH)  /**< Maximum size of a transmitted Heart Rate Measurement. */
 
 #define BLE_UUID_SMART_LOCKER_SERVICE          0xFFEE
@@ -57,7 +54,7 @@ uint8_t elec_lock_status;
 
 /**@brief Function for handling the Connect event.
  *
- * @param[in]   p_sls       Heart Rate Service structure.
+ * @param[in]   p_sls       Smart Locker Service structure..
  * @param[in]   p_ble_evt   Event received from the BLE stack.
  */
 static void on_connect(ble_sls_t * p_sls, ble_evt_t * p_ble_evt)
@@ -68,7 +65,7 @@ static void on_connect(ble_sls_t * p_sls, ble_evt_t * p_ble_evt)
 
 /**@brief Function for handling the Disconnect event.
  *
- * @param[in]   p_sls       Heart Rate Service structure.
+ * @param[in]   p_sls       Smart Locker Service structure.
  * @param[in]   p_ble_evt   Event received from the BLE stack.
  */
 static void on_disconnect(ble_sls_t * p_sls, ble_evt_t * p_ble_evt)
@@ -81,13 +78,12 @@ static void on_disconnect(ble_sls_t * p_sls, ble_evt_t * p_ble_evt)
 
 /**@brief Function for handling the Write event.
  *
- * @param[in]   p_sls       Heart Rate Service structure.
+ * @param[in]   p_sls       smart locker Service structure.
  * @param[in]   p_ble_evt   Event received from the BLE stack.
  */
 static void on_write(ble_sls_t * p_sls, ble_evt_t * p_ble_evt)
 {
      ble_gatts_evt_write_t * p_evt_write = &p_ble_evt->evt.gatts_evt.params.write;
-
 
 		   if (p_evt_write->handle == p_sls->fan_negative_ion_cmd_handles.value_handle)
     {
@@ -143,12 +139,12 @@ void ble_sls_on_ble_evt(ble_sls_t * p_sls, ble_evt_t * p_ble_evt)
 
         case BLE_GAP_EVT_DISCONNECTED:
             on_disconnect(p_sls, p_ble_evt);
-				DEBUG_INFO("\r\ndisconnected!");
+				    DEBUG_INFO("\r\ndisconnected!");
             break;
 
         case BLE_GATTS_EVT_WRITE:
             on_write(p_sls, p_ble_evt);
-				DEBUG_INFO("\r\nwrite!");
+				    DEBUG_INFO("\r\nwrited!");
             break;
 
         default:
@@ -458,8 +454,8 @@ static uint32_t elec_lock_cmd_char_add(ble_sls_t                 * p_sls,
     char_md.char_props.read  = 1;
 	  char_md.char_props.write = 1;
 	  char_md.char_user_desc_max_size=MAX_SLS_USER_DESC_LEN;
-	  char_md.char_user_desc_size=sizeof("fan_ngt_ion_cmd");
-	  char_md.p_char_user_desc=(uint8_t*)"fan_ngt_ion_cmd";
+	  char_md.char_user_desc_size=sizeof("elec_lock_cmd");
+	  char_md.p_char_user_desc=(uint8_t*)"elec_lock_cmd";
     char_md.p_char_pf        = NULL;
     char_md.p_user_desc_md   = NULL;
     char_md.p_cccd_md        = NULL;
@@ -509,8 +505,8 @@ static uint32_t elec_lock_status_char_add(ble_sls_t                 * p_sls,
     char_md.char_props.read  = 1;
 	  //char_md.char_props.write = 1;
 	  char_md.char_user_desc_max_size=MAX_SLS_USER_DESC_LEN;
-	  char_md.char_user_desc_size=sizeof("fan_ngt_ion_status");
-	  char_md.p_char_user_desc=(uint8_t*)"fan_ngt_ion_status";
+	  char_md.char_user_desc_size=sizeof("elec_lock_status");
+	  char_md.p_char_user_desc=(uint8_t*)"elec_lock_status";
     char_md.p_char_pf        = NULL;
     char_md.p_user_desc_md   = NULL;
     char_md.p_cccd_md        = NULL;
